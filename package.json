@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "npm run build --prefix frontend",
+    "build": "cd frontend && npm install && npm run build",
     "install-client": "npm install --prefix frontend",
     "install-all": "npm install && npm run install-client",
     "heroku-postbuild": "npm run install-client && npm run build"
