@@ -45,12 +45,13 @@ const accessChat = asyncHandler(async (req, res) => {
         "users",
         "-password",
       );
-      // Notify all users in the new chat
-      FullChat.users.forEach((user) => {
-        if (io) {
-          io.emit("chat created", FullChat);
-        }
-      });
+      // Notify all connected clients about new chat
+      if (io) {
+        console.log("Emitting 'chat created' event to all clients");
+        io.emit("chat created", FullChat);
+      } else {
+        console.log("Socket.IO not available, cannot emit chat created event");
+      }
       res.status(200).send(FullChat);
     } catch (error) {
       res.status(400);

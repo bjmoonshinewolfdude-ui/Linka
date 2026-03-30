@@ -87,17 +87,18 @@ const removeUserFromOnlineList = (socketId) => {
 };
 
 io.on("connection", (socket) => {
-  console.log("Connected to socket.io");
+  console.log("New socket connection:", socket.id);
 
   socket.on("setup", (userData) => {
     const { userId } = userData;
+    console.log("Socket setup for user:", userId);
     addUserToOnlineList(userId, socket.id);
     socket.emit("connected");
   });
 
   socket.on("join chat", (room) => {
     socket.join(room);
-    console.log("User joined room: " + room);
+    console.log("User joined room:", room);
   });
 
   socket.on("new message", (newMessageRecieved) => {
@@ -105,6 +106,7 @@ io.on("connection", (socket) => {
 
     if (!chat.users) return;
 
+    console.log("New message received:", newMessageRecieved);
     // Emit to the chat room so all participants in that chat receive it
     socket.to(chat._id).emit("message recieved", newMessageRecieved);
   });

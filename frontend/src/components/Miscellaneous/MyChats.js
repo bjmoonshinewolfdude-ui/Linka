@@ -20,6 +20,7 @@ const MyChats = ({ fetchAgain }) => {
   const { setSelectedChat, chats, user, setChats, selectedChat } = ChatState();
   const toast = useToast();
   const socketRef = React.useRef();
+  const [socketConnected, setSocketConnected] = React.useState(false);
 
   const fetchChats = async () => {
     try {
@@ -42,23 +43,24 @@ const MyChats = ({ fetchAgain }) => {
     }
   };
 
+  // Separate effect for socket setup - runs once
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
-    fetchChats();
-
+    if (!user?._id) return;
+    
     // Setup socket for real-time chat updates
     socketRef.current = io(ENDPOINT);
     socketRef.current.emit("setup", { userId: user._id });
 
     socketRef.current.on("connected", () => {
       console.log("MyChats socket connected");
+      setSocketConnected(true);
     });
 
     socketRef.current.on("chat created", (newChat) => {
       console.log("New chat received via socket:", newChat);
       setChats((prevChats) => {
-        // Check if chat already exists
-        const exists = prevChats?.find((c) => c._id === newChat._id);
+        if (!prevChats) return [newChat];
+        const exists = prevChats.find((c) => c._id === newChat._id);
         if (exists) return prevChats;
         return [newChat, ...prevChats];
       });
@@ -68,7 +70,14 @@ const MyChats = ({ fetchAgain }) => {
       socketRef.current.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAgain, user._id]);
+  }, [user?._id]);
+
+  // Effect for fetching chats - runs when fetchAgain changes
+  useEffect(() => {
+    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+    fetchChats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAgain]);
   return (
     <Box
       display={{ base: selectedChat ? "none" : "flex", md: "flex" }}

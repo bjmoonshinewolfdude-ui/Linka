@@ -60,6 +60,9 @@ const Homepage = () => {
         borderWidth="1px"
         borderColor="var(--border-color)"
         boxShadow="0 4px 6px rgba(0, 0, 0, 0.3)"
+        maxH="70vh"
+        overflow="auto"
+        className="hide-scrollbar"
       >
         <Tabs variant="soft-rounded" colorScheme="yellow" w="100%">
           <TabList mb={"1em"} bg="var(--surface-medium)" borderRadius="md" p={1}>
