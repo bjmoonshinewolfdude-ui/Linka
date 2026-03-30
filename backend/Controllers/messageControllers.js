@@ -1,10 +1,11 @@
 const asyncHandler = require("express-async-handler");
-const Message = require("../../models/messageModel");
-const User = require("../../models/UserModel");
-const Chat = require("../../models/ChatModel");
+const path = require("path");
+const Message = require(path.resolve(__dirname, "../models/messageModel"));
+const User = require(path.resolve(__dirname, "../models/UserModel"));
+const Chat = require(path.resolve(__dirname, "../models/ChatModel"));
 
-// Force deployment platforms to recognize correct paths
-console.log("Using models from root directory:", "../../models/");
+console.log("Controller __dirname:", __dirname);
+console.log("Model path:", path.resolve(__dirname, "../models/messageModel"));
 
 const sendMessage = asyncHandler(async (req, res) => {
   const { content, chatId } = req.body;

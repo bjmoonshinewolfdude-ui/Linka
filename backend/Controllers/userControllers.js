@@ -1,6 +1,7 @@
 const { request } = require("express");
 const expressAsyncHandler = require("express-async-handler");
-const User = require("../../models/UserModel");
+const path = require("path");
+const User = require(path.resolve(__dirname, "../models/UserModel"));
 const generateToken = require("../Config/generateToken");
 
 const allUsers = expressAsyncHandler(async (req, res) => {
