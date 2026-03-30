@@ -7,7 +7,6 @@ import {
   Input,
   Spinner,
   Text,
-  Avatar,
 } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../Config/ChatLogics";
 import ProfileModal from "./Miscellaneous/ProfileModal";

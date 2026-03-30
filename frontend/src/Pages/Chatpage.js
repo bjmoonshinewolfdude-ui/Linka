@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
-import { use, useState } from "react";
+import { useState } from "react";
 import SideDrawer from "../components/Miscellaneous/SideDrawer";
 import MyChats from "../components/Miscellaneous/MyChats";
 import Chatbox from "../components/Miscellaneous/Chatbox";
