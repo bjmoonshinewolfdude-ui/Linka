@@ -28,18 +28,7 @@ const Signup = () => {
 
   const handleClick = () => setShow(!show);
   const postDetails = (pics) => {
-    setLoading(true);
-
-    if (pics === undefined) {
-      toast({
-        title: "Please Select an Image!",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      return;
-    }
+    if (!pics) return; // No image selected, use default
 
     if (pics.type !== "image/jpeg" && pics.type !== "image/png") {
       toast({
@@ -49,44 +38,32 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
-      setLoading(false);
       return;
     }
 
-    if (pics.type === "image/jpeg" || pics.type === "image/png") {
-      const data = new FormData();
-      data.append("file", pics);
-      data.append("upload_preset", "LINKER");
-      data.append("cloud_name", "dmrdwv8d0");
-      axios
-        .post("https://api.cloudinary.com/v1_1/dmrdwv8d0/image/upload", data)
-        .then((response) => {
-          console.log("Cloudinary response:", response);
-          setPic(response.data.url.toString());
-          setLoading(false);
-          toast({
-            title: "Image uploaded successfully!",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-            position: "bottom",
-          });
-        })
-        .catch((error) => {
-          console.log("Cloudinary error:", error);
-          setLoading(false);
+    setLoading(true);
+    const data = new FormData();
+    data.append("file", pics);
+    data.append("upload_preset", "LINKER");
+    data.append("cloud_name", "dmrdwv8d0");
+    axios
+      .post("https://api.cloudinary.com/v1_1/dmrdwv8d0/image/upload", data)
+      .then((response) => {
+        console.log("Cloudinary response:", response);
+        setPic(response.data.url.toString());
+        setLoading(false);
+        toast({
+          title: "Image uploaded successfully!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
         });
-    } else {
-      toast({
-        title: "An error occurred while uploading the image. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
+      })
+      .catch((error) => {
+        console.log("Cloudinary error:", error);
+        setLoading(false);
       });
-      setLoading(false);
-      return;
-    }
   };
   const submitHandler = async () => {
     setLoading(true);
@@ -285,7 +262,7 @@ const Signup = () => {
       
       <FormControl id="pic">
         <FormLabel color="var(--text-primary)" fontWeight="600">
-          Upload your Picture
+          Upload your Picture (Optional)
         </FormLabel>
         <InputGroup>
           <Input
