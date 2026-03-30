@@ -11,6 +11,7 @@ const messageRoutes = require("./backend/Routes/MessageRoutes");
 const path = require("path");
 
 // Railway deployment fix - ensure model paths are correct
+// Last updated: 2025-03-30 21:36 UTC
 
 dotenv.config();
 connectDB();
