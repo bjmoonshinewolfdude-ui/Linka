@@ -67,68 +67,57 @@ const io = require("socket.io")(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("Connected to socket.io");
-});
-
 global.onlineUsers = new Map();
 
 const addUserToOnlineList = (userId, socketId) => {
-  if (!onlineUsers.has(userId)) {
-    onlineUsers.set(userId, socketId);
-  }
+  onlineUsers.set(userId, socketId);
 };
 
 const removeUserFromOnlineList = (socketId) => {
-  if (socketId && onlineUsers.has(socketId)) {
-    const userId = onlineUsers.get(socketId);
-    onlineUsers.delete(socketId);
-    return userId;
+  for (const [userId, id] of onlineUsers.entries()) {
+    if (id === socketId) {
+      onlineUsers.delete(userId);
+      return userId;
+    }
   }
 };
 
-const getUser = (userId) => {
-  return onlineUsers.get(userId);
-};
+io.on("connection", (socket) => {
+  console.log("Connected to socket.io");
 
-io.on("setup", (userData) => {
-  const { userId, socketId } = userData;
-  addUserToOnlineList(userId, socketId);
-  socket.emit("connected");
-});
-
-io.on("join chat", (userId) => {
-  const users = getUser(userId);
-  socket.join(userId);
-});
-
-io.on("new message", (newMessageRecieved) => {
-  const chat = newMessageRecieved.chat;
-
-  if (!chat.users) return;
-
-  chat.users.forEach((user) => {
-    if (user._id == newMessageRecieved.sender._id) return;
-
-    socket.in(user._id).emit("message recieved", newMessageRecieved);
+  socket.on("setup", (userData) => {
+    const { userId } = userData;
+    addUserToOnlineList(userId, socket.id);
+    socket.emit("connected");
   });
-});
 
-io.on("typing", ({ userId, chatId }) => {
-  const user = getUser(userId);
-  if (user) {
-    socket.in(chatId).emit("typing", user);
-  }
-});
+  socket.on("join chat", (room) => {
+    socket.join(room);
+    console.log("User joined room: " + room);
+  });
 
-io.on("stop typing", ({ userId, chatId }) => {
-  const user = getUser(userId);
-  if (user) {
-    socket.in(chatId).emit("stop typing", user);
-  }
-});
+  socket.on("new message", (newMessageRecieved) => {
+    const chat = newMessageRecieved.chat;
 
-io.on("disconnect", () => {
-  removeUserFromOnlineList(socket.id);
-  socket.emit("disconnect");
+    if (!chat.users) return;
+
+    chat.users.forEach((user) => {
+      if (user._id == newMessageRecieved.sender._id) return;
+
+      socket.in(user._id).emit("message recieved", newMessageRecieved);
+    });
+  });
+
+  socket.on("typing", (room) => {
+    socket.in(room).emit("typing");
+  });
+
+  socket.on("stop typing", (room) => {
+    socket.in(room).emit("stop typing");
+  });
+
+  socket.on("disconnect", () => {
+    removeUserFromOnlineList(socket.id);
+    console.log("User disconnected");
+  });
 });
