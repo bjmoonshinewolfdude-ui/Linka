@@ -167,8 +167,8 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
   };
 
   const handleSearch = async (query) => {
-    setSearch(query);
     if (!query) {
+      setSearchResult([]);
       return;
     }
 
