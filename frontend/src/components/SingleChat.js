@@ -17,7 +17,7 @@ import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = process.env.NODE_ENV === "production" ? window.location.origin : "http://localhost:5000";
 let socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
