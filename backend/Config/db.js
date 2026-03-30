@@ -1,27 +1,19 @@
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-dotenv.config();
 
 const connectDB = async () => {
   try {
-    // Debug: log all env vars starting with MONGO
-    console.log("Environment check:");
-    console.log("MONGO_URI:", process.env.MONGO_URI ? "SET" : "NOT SET");
-    console.log("MONGO_URL:", process.env.MONGO_URL ? "SET" : "NOT SET");
-    
-    const mongoUri = process.env.MONGO_URI || process.env.MONGO_URL;
+    const mongoUri = process.env.MONGO_URI || process.env.MONGO_URL || process.env.DATABASE_URL;
     
     if (!mongoUri) {
-      console.error("ERROR: No MongoDB connection string found!");
-      console.error("Please set MONGO_URI or MONGO_URL environment variable.");
+      console.error("ERROR: No MongoDB URI found. Set MONGO_URI, MONGO_URL, or DATABASE_URL");
       process.exit(1);
     }
     
-    const conn = await mongoose.connect(mongoUri, {});
-    console.log(`MongoDB Connected: ${conn.connection.host}`.cyan.underline);
+    const conn = await mongoose.connect(mongoUri);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`Error: ${error.message}`.red.bold);
-    process.exit();
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
 };
 
