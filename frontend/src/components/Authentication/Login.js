@@ -69,8 +69,9 @@ const Login = () => {
     }
   };
   return (
-    <VStack spacing="15px" color="var(--text-primary)">
-      <FormControl id="email" isRequired>
+    <div className="auth-scroll-container hide-scrollbar">
+      <VStack spacing="15px" color="var(--text-primary)">
+        <FormControl id="email" isRequired>
         <FormLabel color="var(--text-primary)" fontWeight="600">
           Email
         </FormLabel>
@@ -162,7 +163,8 @@ const Login = () => {
       >
         Get Guest User Credentials
       </Button>
-    </VStack>
+      </VStack>
+    </div>
   );
 };
 

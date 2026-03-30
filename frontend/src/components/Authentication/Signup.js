@@ -12,6 +12,7 @@ import React from "react";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { ChatState } from "../../Context/ChatProvider";
 
 const Signup = () => {
   const [show, setShow] = React.useState(false);
@@ -23,6 +24,7 @@ const Signup = () => {
   const [loading, setLoading] = React.useState(false);
   const toast = useToast();
   const history = useHistory();
+  const { setUser } = ChatState();
 
   const handleClick = () => setShow(!show);
   const postDetails = (pics) => {
@@ -128,6 +130,7 @@ const Signup = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
       setLoading(false);
       history.push("/chats");
     } catch (error) {
@@ -143,8 +146,9 @@ const Signup = () => {
   };
 
   return (
-    <VStack spacing="15px" color="var(--text-primary)">
-      <FormControl id="first-name" isRequired>
+    <div className="auth-scroll-container hide-scrollbar">
+      <VStack spacing="15px" color="var(--text-primary)">
+        <FormControl id="first-name" isRequired>
         <FormLabel color="var(--text-primary)" fontWeight="600">
           Username
         </FormLabel>
@@ -315,7 +319,8 @@ const Signup = () => {
       >
         Sign Up
       </Button>
-    </VStack>
+      </VStack>
+    </div>
   );
 };
 

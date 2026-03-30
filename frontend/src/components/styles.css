@@ -3,4 +3,19 @@
   flex-direction: column;
   overflow-y: scroll;
   scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars for react-scrollable-feed */
+.scrollable-feed {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollable-feed::-webkit-scrollbar {
+  display: none;
 }

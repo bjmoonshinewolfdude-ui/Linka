@@ -62,6 +62,23 @@
   background: var(--accent-yellow);
 }
 
+/* Hide scrollbars but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Auth page scrolling */
+.auth-scroll-container {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
 /* Typing indicator animation */
 @keyframes bounce {
   0%, 80%, 100% {
