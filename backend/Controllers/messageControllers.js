@@ -1,10 +1,10 @@
 const asyncHandler = require("express-async-handler");
-const Message = require("../models/messageModel");
-const User = require("../models/UserModel");
-const Chat = require("../models/ChatModel");
+const Message = require("../../models/messageModel");
+const User = require("../../models/UserModel");
+const Chat = require("../../models/ChatModel");
 
-// Force Railway to recognize correct paths
-console.log("Using models from root directory:", "../models/");
+// Force deployment platforms to recognize correct paths
+console.log("Using models from root directory:", "../../models/");
 
 const sendMessage = asyncHandler(async (req, res) => {
   const { content, chatId } = req.body;
