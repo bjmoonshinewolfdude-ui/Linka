@@ -20,7 +20,6 @@ const MyChats = ({ fetchAgain }) => {
   const { setSelectedChat, chats, user, setChats, selectedChat } = ChatState();
   const toast = useToast();
   const socketRef = React.useRef();
-  const [socketConnected, setSocketConnected] = React.useState(false);
 
   const fetchChats = async () => {
     try {
@@ -53,7 +52,6 @@ const MyChats = ({ fetchAgain }) => {
 
     socketRef.current.on("connected", () => {
       console.log("MyChats socket connected");
-      setSocketConnected(true);
     });
 
     socketRef.current.on("chat created", (newChat) => {
