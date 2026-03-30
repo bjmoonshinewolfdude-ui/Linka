@@ -1,10 +1,10 @@
 const asyncHandler = require("express-async-handler");
-const Message = require("../models/messageModel");
-const User = require("../models/UserModel");
-const Chat = require("../models/ChatModel");
+const Message = require(__dirname + "/../models/messageModel");
+const User = require(__dirname + "/../models/UserModel");
+const Chat = require(__dirname + "/../models/ChatModel");
 
 // Force Railway to recognize correct paths
-console.log("Using model paths: messageModel, UserModel, ChatModel");
+console.log("Using absolute paths for models:", __dirname + "/../models/");
 
 const sendMessage = asyncHandler(async (req, res) => {
   const { content, chatId } = req.body;
