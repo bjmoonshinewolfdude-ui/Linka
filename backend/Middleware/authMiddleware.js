@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
-const path = require("path");
-const User = require(path.resolve(__dirname, "../models/UserModel"));
+const User = require("../models/UserModel");
 const expressAsyncHandler = require("express-async-handler");
 
 const protect = expressAsyncHandler(async (req, res, next) => {

@@ -1,11 +1,9 @@
 const asyncHandler = require("express-async-handler");
-const path = require("path");
-const Message = require(path.resolve(__dirname, "../models/messageModel"));
-const User = require(path.resolve(__dirname, "../models/UserModel"));
-const Chat = require(path.resolve(__dirname, "../models/ChatModel"));
+const Message = require("../models/MessageModel");
+const User = require("../models/UserModel");
+const Chat = require("../models/ChatModel");
 
-console.log("Controller __dirname:", __dirname);
-console.log("Model path:", path.resolve(__dirname, "../models/messageModel"));
+console.log("Controller directory:", __dirname);
 
 const sendMessage = asyncHandler(async (req, res) => {
   const { content, chatId } = req.body;

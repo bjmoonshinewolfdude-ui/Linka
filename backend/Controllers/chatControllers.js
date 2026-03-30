@@ -1,7 +1,6 @@
 const asyncHandler = require("express-async-handler");
-const path = require("path");
-const Chat = require(path.resolve(__dirname, "../models/ChatModel"));
-const User = require(path.resolve(__dirname, "../models/UserModel"));
+const Chat = require("../models/ChatModel");
+const User = require("../models/UserModel");
 
 const accessChat = asyncHandler(async (req, res) => {
   const { userId } = req.body;
