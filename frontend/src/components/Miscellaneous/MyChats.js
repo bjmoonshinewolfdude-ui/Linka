@@ -50,19 +50,25 @@ const MyChats = ({ fetchAgain }) => {
     socketRef.current = io(ENDPOINT);
     socketRef.current.emit("setup", { userId: user._id });
 
+    socketRef.current.on("connected", () => {
+      console.log("MyChats socket connected");
+    });
+
     socketRef.current.on("chat created", (newChat) => {
-      // Check if chat already exists in list
-      const exists = chats?.find((c) => c._id === newChat._id);
-      if (!exists) {
-        setChats((prevChats) => [newChat, ...prevChats]);
-      }
+      console.log("New chat received via socket:", newChat);
+      setChats((prevChats) => {
+        // Check if chat already exists
+        const exists = prevChats?.find((c) => c._id === newChat._id);
+        if (exists) return prevChats;
+        return [newChat, ...prevChats];
+      });
     });
 
     return () => {
       socketRef.current.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAgain]);
+  }, [fetchAgain, user._id]);
   return (
     <Box
       display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
