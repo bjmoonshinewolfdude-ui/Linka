@@ -3,6 +3,9 @@ const Message = require("../models/messageModel");
 const User = require("../models/UserModel");
 const Chat = require("../models/ChatModel");
 
+// Force Railway to recognize correct paths
+console.log("Using model paths: messageModel, UserModel, ChatModel");
+
 const sendMessage = asyncHandler(async (req, res) => {
   const { content, chatId } = req.body;
   if (!content || !chatId) {
