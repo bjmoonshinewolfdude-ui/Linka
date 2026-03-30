@@ -130,7 +130,3 @@ io.on("disconnect", () => {
   removeUserFromOnlineList(socket.id);
   socket.emit("disconnect");
 });
-
-socket.off("setup", () => {
-  socket.disconnect();
-});
