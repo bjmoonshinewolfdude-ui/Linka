@@ -9,6 +9,7 @@ const { notfound, errorHandler } = require("./backend/Middleware/ErrorMiddleware
 const chatRoutes = require("./backend/Routes/chatRoutes");
 const messageRoutes = require("./backend/Routes/MessageRoutes");
 const path = require("path");
+const { setIo } = require("./backend/Controllers/chatControllers");
 
 // Railway deployment fix - ensure model paths are correct
 // Last updated: 2025-03-30 21:36 UTC
@@ -66,6 +67,9 @@ const io = require("socket.io")(server, {
     credentials: true,
   },
 });
+
+// Pass io instance to chat controllers
+setIo(io);
 
 global.onlineUsers = new Map();
 

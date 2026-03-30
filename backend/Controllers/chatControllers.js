@@ -2,6 +2,15 @@ const asyncHandler = require("express-async-handler");
 const Chat = require("../models/ChatModel");
 const User = require("../models/UserModel");
 
+// Store io instance
+let io;
+
+const setIo = (socketIo) => {
+  io = socketIo;
+};
+
+const getIo = () => io;
+
 const accessChat = asyncHandler(async (req, res) => {
   const { userId } = req.body;
   if (!userId) {
@@ -36,6 +45,12 @@ const accessChat = asyncHandler(async (req, res) => {
         "users",
         "-password",
       );
+      // Notify all users in the new chat
+      FullChat.users.forEach((user) => {
+        if (io) {
+          io.emit("chat created", FullChat);
+        }
+      });
       res.status(200).send(FullChat);
     } catch (error) {
       res.status(400);
@@ -144,6 +159,10 @@ const addToGroup = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Chat Not Found");
   } else {
+    // Notify all users in the group about the update
+    if (io) {
+      io.emit("chat created", added);
+    }
     res.json(added);
   }
 });
@@ -188,4 +207,6 @@ module.exports = {
   renameGroup,
   addToGroup,
   removeFromGroup,
+  setIo,
+  getIo,
 };

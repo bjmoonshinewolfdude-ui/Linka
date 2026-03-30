@@ -11,11 +11,15 @@ import { Stack } from "@chakra-ui/layout";
 import { getSender } from "../../Config/ChatLogics";
 import ChatLoading from "../ChatLoading";
 import GroupChatModal from "./GroupChatModal";
+import io from "socket.io-client";
+
+const ENDPOINT = process.env.NODE_ENV === "production" ? window.location.origin : "http://localhost:5000";
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = React.useState();
   const { setSelectedChat, chats, user, setChats, selectedChat } = ChatState();
   const toast = useToast();
+  const socketRef = React.useRef();
 
   const fetchChats = async () => {
     try {
@@ -41,6 +45,22 @@ const MyChats = ({ fetchAgain }) => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
+
+    // Setup socket for real-time chat updates
+    socketRef.current = io(ENDPOINT);
+    socketRef.current.emit("setup", { userId: user._id });
+
+    socketRef.current.on("chat created", (newChat) => {
+      // Check if chat already exists in list
+      const exists = chats?.find((c) => c._id === newChat._id);
+      if (!exists) {
+        setChats((prevChats) => [newChat, ...prevChats]);
+      }
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchAgain]);
   return (
