@@ -103,7 +103,6 @@ const SideDrawer = () => {
       if (!chats.find((c) => c._id === data._id))
         setChats([data, ...(chats || [])]);
       setSelectedChat(data);
-      setLoadingChat(false);
       onClose();
     } catch (error) {
       toast({
@@ -114,6 +113,8 @@ const SideDrawer = () => {
         isClosable: true,
         position: "bottom-left",
       });
+    } finally {
+      setLoadingChat(false);
     }
   };
 

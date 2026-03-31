@@ -96,7 +96,19 @@ const createGroupChat = asyncHandler(async (req, res) => {
       .status(400)
       .send("More than 2 users are required to form a group chat");
   }
-  users.push(req.user);
+  users.push(req.user._id);
+
+  // Check for existing group with same name and same members
+  const existingChat = await Chat.findOne({
+    chatName: req.body.name,
+    isGroupChat: true,
+    users: { $all: users, $size: users.length },
+  });
+
+  if (existingChat) {
+    return res.status(400).send({ message: "A group with this name and members already exists" });
+  }
+
   try {
     const groupChat = await Chat.create({
       chatName: req.body.name,

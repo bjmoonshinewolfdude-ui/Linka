@@ -27,6 +27,7 @@ const GroupChatModal = ({ children }) => {
   const [search, setSearch] = React.useState("");
   const [searchResult, setSearchResult] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [createLoading, setCreateLoading] = React.useState(false);
 
   const toast = useToast();
   const { user, chats, setChats } = ChatState();
@@ -66,6 +67,7 @@ const GroupChatModal = ({ children }) => {
       return;
     }
 
+    setCreateLoading(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       const { data } = await axios.post(
@@ -76,7 +78,7 @@ const GroupChatModal = ({ children }) => {
         },
         config,
       );
-      setChats([data, ...(chats || [])]); // <- prevents undefined push
+      setChats([data, ...(chats || [])]);
       onClose();
       toast({
         title: "New Group Chat Created!",
@@ -88,12 +90,14 @@ const GroupChatModal = ({ children }) => {
     } catch (error) {
       toast({
         title: "Failed to Create the Chat!",
-        description: error.response?.data || error.message,
+        description: error.response?.data?.message || error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
         position: "bottom-left",
       });
+    } finally {
+      setCreateLoading(false);
     }
   };
 
@@ -214,6 +218,9 @@ const GroupChatModal = ({ children }) => {
             <Button 
               className="btn-primary"
               onClick={handleSubmit}
+              isLoading={createLoading}
+              loadingText="Creating..."
+              isDisabled={createLoading}
             >
               Create Chat
             </Button>
