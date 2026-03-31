@@ -90,10 +90,19 @@ io.on("connection", (socket) => {
   console.log("New socket connection:", socket.id);
 
   socket.on("setup", (userData) => {
-    const { userId } = userData;
-    console.log("Socket setup for user:", userId);
-    addUserToOnlineList(userId, socket.id);
-    socket.emit("connected");
+    try {
+      // Handle both formats: { userId: "..." } or { _id: "..." }
+      const userId = userData?.userId || userData?._id;
+      if (!userId) {
+        console.log("No userId provided in setup");
+        return;
+      }
+      console.log("Socket setup for user:", userId);
+      addUserToOnlineList(userId.toString(), socket.id);
+      socket.emit("connected");
+    } catch (error) {
+      console.error("Error in socket setup:", error);
+    }
   });
 
   socket.on("join chat", (room) => {
@@ -145,4 +154,12 @@ io.on("connection", (socket) => {
     removeUserFromOnlineList(socket.id);
     console.log("User disconnected");
   });
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
