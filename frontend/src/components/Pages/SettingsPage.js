@@ -12,7 +12,6 @@ import {
   Avatar,
   Badge,
   useToast,
-  Divider,
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
@@ -22,8 +21,6 @@ import { ChatState } from "../../Context/ChatProvider";
 
 const SettingsPage = () => {
   const { user, setUser } = ChatState();
-  const [name, setName] = useState(user?.name || "");
-  const [email] = useState(user?.email || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

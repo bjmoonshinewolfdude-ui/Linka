@@ -7,7 +7,7 @@ import {
   MenuButton,
   Avatar,
 } from "@chakra-ui/react";
-import { BellIcon, SettingsIcon } from "@chakra-ui/icons";
+import { BellIcon } from "@chakra-ui/icons";
 import React from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import { MenuList, MenuItem, MenuDivider } from "@chakra-ui/react";

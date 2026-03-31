@@ -33,11 +33,17 @@ const AdminPanel = () => {
   useEffect(() => {
     if (!user || user.role !== "admin") {
       history.push("/access-denied");
-      return;
     }
-    fetchUsers();
-    loadAuditLog();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, history]);
+
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      fetchUsers();
+      loadAuditLog();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchUsers = async () => {
     try {
