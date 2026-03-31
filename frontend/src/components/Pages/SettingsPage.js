@@ -14,14 +14,9 @@ import {
   useToast,
   Alert,
   AlertIcon,
-  Card,
-  CardBody,
-  CardHeader,
-  Icon,
   Flex,
-  Stack,
 } from "@chakra-ui/react";
-import { ArrowBackIcon, SettingsIcon, LockIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, LockIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
@@ -132,237 +127,151 @@ const SettingsPage = () => {
   };
 
   return (
-    <Box bg="var(--dark-bg)" minH="100vh" py={8} px={{ base: 4, md: 8, lg: 12 }}>
-      <VStack spacing={8} align="stretch" maxW="700px" mx="auto">
+    <Box
+      bg="var(--dark-bg)"
+      minH="100vh"
+      py={6}
+      px={4}
+      overflowY="auto"
+      css={{
+        '&::-webkit-scrollbar': { width: '8px' },
+        '&::-webkit-scrollbar-track': { background: 'var(--surface-dark)' },
+        '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
+      }}
+    >
+      <VStack spacing={6} align="stretch" maxW="600px" mx="auto">
         {/* Header */}
-        <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
-          <HStack spacing={4}>
-            <Icon as={SettingsIcon} boxSize={8} color="var(--acid-yellow)" />
-            <Heading color="var(--acid-yellow)" size="xl">
-              Settings & Profile
-            </Heading>
-          </HStack>
+        <Flex justify="space-between" align="center" wrap="wrap" gap={2}>
+          <Heading color="var(--acid-yellow)" size="lg">
+            Settings & Profile
+          </Heading>
           <Button
             leftIcon={<ArrowBackIcon />}
             onClick={() => history.push("/chats")}
             bg="var(--surface-dark)"
             color="var(--text-primary)"
-            borderWidth="1px"
-            borderColor="var(--border-color)"
-            px={6}
-            py={5}
-            _hover={{ 
-              bg: "var(--surface-medium)",
-              borderColor: "var(--accent-cyan)"
-            }}
+            _hover={{ bg: "var(--surface-medium)" }}
+            size="sm"
           >
-            Back to Chats
+            Back
           </Button>
         </Flex>
 
         {/* Profile Section */}
-        <Card bg="var(--surface-dark)" borderWidth="1px" borderColor="var(--border-color)" borderRadius="xl" overflow="hidden">
-          <CardHeader 
-            bg="var(--surface-medium)" 
-            borderBottomWidth="1px" 
-            borderColor="var(--border-color)" 
-            py={6} 
-            px={8}
-          >
-            <HStack spacing={3}>
-              <Avatar
-                size="lg"
-                src={user?.pic}
-                name={user?.name}
-                border="3px solid var(--accent-cyan)"
-              />
-              <VStack align="start" spacing={1}>
-                <Heading size="md" color="var(--text-primary)">{user?.name}</Heading>
-                <Text color="var(--text-secondary)" fontSize="sm">{user?.email}</Text>
-              </VStack>
-            </HStack>
-          </CardHeader>
-          <CardBody p={8}>
-            <Stack direction={{ base: "column", md: "row" }} spacing={8} align="center" justify="center">
-              <VStack spacing={4} align="center">
-                <Avatar
-                  size="2xl"
-                  src={user?.pic}
-                  name={user?.name}
-                  border="4px solid var(--accent-cyan)"
-                  boxShadow="0 0 20px rgba(0, 255, 255, 0.2)"
-                />
-                <Badge
-                  px={4}
-                  py={1}
-                  borderRadius="full"
-                  fontSize="0.9em"
-                  bg={user?.role === "admin" ? "var(--accent-pink)" : "var(--accent-cyan)"}
-                  color="var(--dark-bg)"
-                  fontWeight="bold"
-                >
-                  {user?.role === "admin" ? "ADMINISTRATOR" : "STANDARD USER"}
-                </Badge>
-              </VStack>
-              
-              <VStack align="start" spacing={3} flex={1} w="full">
-                <HStack justify="space-between" w="full" py={2} borderBottom="1px solid" borderColor="var(--border-color)">
-                  <Text color="var(--text-secondary)">Full Name</Text>
-                  <Text color="var(--text-primary)" fontWeight="medium">{user?.name}</Text>
-                </HStack>
-                <HStack justify="space-between" w="full" py={2} borderBottom="1px solid" borderColor="var(--border-color)">
-                  <Text color="var(--text-secondary)">Email Address</Text>
-                  <Text color="var(--text-primary)" fontWeight="medium">{user?.email}</Text>
-                </HStack>
-                <HStack justify="space-between" w="full" py={2} borderBottom="1px solid" borderColor="var(--border-color)">
-                  <Text color="var(--text-secondary)">Account Role</Text>
-                  <Badge 
-                    bg={user?.role === "admin" ? "var(--accent-pink)" : "var(--accent-cyan)"}
-                    color="var(--dark-bg)"
-                  >
-                    {user?.role}
-                  </Badge>
-                </HStack>
-                <HStack justify="space-between" w="full" py={2}>
-                  <Text color="var(--text-secondary)">Member Since</Text>
-                  <Text color="var(--text-primary)" fontWeight="medium">
-                    {new Date(user?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  </Text>
-                </HStack>
-              </VStack>
-            </Stack>
-          </CardBody>
-        </Card>
+        <Box bg="var(--surface-dark)" p={5} borderRadius="lg" borderWidth="1px">
+          <VStack spacing={4} align="center">
+            <Avatar
+              size="xl"
+              src={user?.pic}
+              name={user?.name}
+              border="3px solid var(--accent-cyan)"
+            />
+            <Box textAlign="center">
+              <Heading size="md">{user?.name}</Heading>
+              <Text color="var(--text-secondary)" fontSize="sm">{user?.email}</Text>
+              <Badge
+                mt={2}
+                bg={user?.role === "admin" ? "var(--accent-pink)" : "var(--accent-cyan)"}
+                color="var(--dark-bg)"
+              >
+                {user?.role === "admin" ? "Admin" : "User"}
+              </Badge>
+            </Box>
+          </VStack>
+        </Box>
 
         {/* Change Password Section */}
-        <Card bg="var(--surface-dark)" borderWidth="1px" borderColor="var(--border-color)" borderRadius="xl" overflow="hidden">
-          <CardHeader bg="var(--surface-medium)" borderBottomWidth="1px" borderColor="var(--border-color)" py={5} px={8}>
-            <HStack spacing={3}>
-              <Icon as={LockIcon} color="var(--accent-cyan)" />
-              <Heading size="md" color="var(--accent-cyan)">
-                Change Password
-              </Heading>
-            </HStack>
-          </CardHeader>
-          <CardBody p={8}>
-            <Alert status="info" mb={6} bg="var(--surface-medium)" borderRadius="lg" borderLeft="4px solid" borderLeftColor="var(--accent-cyan)">
-              <AlertIcon color="var(--accent-cyan)" />
-              <Text fontSize="sm" lineHeight="1.6">
-                <strong>Password Requirements:</strong><br />
-                • Minimum 8 characters<br />
-                • At least one uppercase letter (A-Z)<br />
-                • At least one lowercase letter (a-z)<br />
-                • At least one number (0-9)<br />
-                • At least one special character (!@#$%^&*)
-              </Text>
-            </Alert>
+        <Box bg="var(--surface-dark)" p={5} borderRadius="lg" borderWidth="1px">
+          <Heading size="md" mb={4} color="var(--accent-cyan)">
+            Change Password
+          </Heading>
 
-            <VStack spacing={5}>
-              <FormControl>
-                <FormLabel fontWeight="medium" color="var(--text-secondary)">Current Password</FormLabel>
-                <Input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  bg="var(--dark-bg)"
-                  borderColor="var(--border-color)"
-                  color="var(--text-primary)"
-                  size="lg"
-                  py={6}
-                  _hover={{ borderColor: "var(--medium-grey)" }}
-                  _focus={{ borderColor: "var(--accent-cyan)", boxShadow: "0 0 0 2px rgba(0, 255, 255, 0.2)" }}
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel fontWeight="medium" color="var(--text-secondary)">New Password</FormLabel>
-                <Input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  bg="var(--dark-bg)"
-                  borderColor="var(--border-color)"
-                  color="var(--text-primary)"
-                  size="lg"
-                  py={6}
-                  _hover={{ borderColor: "var(--medium-grey)" }}
-                  _focus={{ borderColor: "var(--accent-cyan)", boxShadow: "0 0 0 2px rgba(0, 255, 255, 0.2)" }}
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel fontWeight="medium" color="var(--text-secondary)">Confirm New Password</FormLabel>
-                <Input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  bg="var(--dark-bg)"
-                  borderColor="var(--border-color)"
-                  color="var(--text-primary)"
-                  size="lg"
-                  py={6}
-                  _hover={{ borderColor: "var(--medium-grey)" }}
-                  _focus={{ borderColor: "var(--accent-cyan)", boxShadow: "0 0 0 2px rgba(0, 255, 255, 0.2)" }}
-                />
-              </FormControl>
-
-              <Button
-                onClick={handlePasswordChange}
-                bg="var(--accent-cyan)"
-                color="var(--dark-bg)"
-                width="100%"
-                size="lg"
-                py={6}
-                fontWeight="bold"
-                _hover={{ bg: "var(--acid-yellow)", transform: "translateY(-2px)" }}
-                _active={{ transform: "translateY(0)" }}
-                transition="all 0.2s"
-              >
-                Update Password
-              </Button>
-            </VStack>
-          </CardBody>
-        </Card>
-
-        {/* Session Management */}
-        <Card bg="var(--surface-dark)" borderWidth="1px" borderColor="var(--border-color)" borderRadius="xl" overflow="hidden">
-          <CardHeader bg="var(--surface-medium)" borderBottomWidth="1px" borderColor="var(--border-color)" py={5} px={8}>
-            <HStack spacing={3}>
-              <Icon as={ArrowRightIcon} color="var(--accent-pink)" />
-              <Heading size="md" color="var(--accent-pink)">
-                Session Management
-              </Heading>
-            </HStack>
-          </CardHeader>
-          <CardBody p={8}>
-            <Text mb={4} color="var(--text-secondary)">
-              Logging out will end your current session and clear your authentication token. You will need to log in again to access your account.
+          <Alert status="info" mb={4} bg="var(--surface-medium)" borderRadius="md" size="sm">
+            <AlertIcon />
+            <Text fontSize="xs">
+              Min 8 chars with uppercase, lowercase, number, and special character.
             </Text>
+          </Alert>
+
+          <VStack spacing={3}>
+            <FormControl>
+              <FormLabel fontSize="sm">Current Password</FormLabel>
+              <Input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                bg="var(--dark-bg)"
+                borderColor="var(--border-color)"
+                color="var(--text-primary)"
+                size="sm"
+                _focus={{ borderColor: "var(--accent-cyan)" }}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel fontSize="sm">New Password</FormLabel>
+              <Input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                bg="var(--dark-bg)"
+                borderColor="var(--border-color)"
+                color="var(--text-primary)"
+                size="sm"
+                _focus={{ borderColor: "var(--accent-cyan)" }}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel fontSize="sm">Confirm New Password</FormLabel>
+              <Input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                bg="var(--dark-bg)"
+                borderColor="var(--border-color)"
+                color="var(--text-primary)"
+                size="sm"
+                _focus={{ borderColor: "var(--accent-cyan)" }}
+              />
+            </FormControl>
+
             <Button
-              onClick={handleLogout}
-              bg="var(--accent-pink)"
+              onClick={handlePasswordChange}
+              bg="var(--accent-cyan)"
               color="var(--dark-bg)"
               width="100%"
-              size="lg"
-              py={6}
-              fontWeight="bold"
-              _hover={{ bg: "red.400", transform: "translateY(-2px)" }}
-              _active={{ transform: "translateY(0)" }}
-              transition="all 0.2s"
+              _hover={{ bg: "var(--acid-yellow)" }}
+              size="sm"
             >
-              Logout
+              Update Password
             </Button>
-          </CardBody>
-        </Card>
+          </VStack>
+        </Box>
+
+        {/* Session Management */}
+        <Box bg="var(--surface-dark)" p={5} borderRadius="lg" borderWidth="1px">
+          <Heading size="md" mb={3} color="var(--accent-pink)">
+            Session
+          </Heading>
+          <Button
+            onClick={handleLogout}
+            bg="var(--accent-pink)"
+            color="var(--dark-bg)"
+            width="100%"
+            _hover={{ bg: "red.400" }}
+            size="sm"
+          >
+            Logout
+          </Button>
+        </Box>
 
         {/* Data Storage Notice */}
-        <Card bg="var(--surface-dark)" borderWidth="1px" borderColor="var(--border-color)" borderStyle="dashed" borderRadius="xl">
-          <CardBody p={6}>
-            <Text fontSize="sm" color="var(--text-secondary)" lineHeight="1.6">
-              <strong style={{ color: "var(--accent-cyan)" }}>Data Storage Notice:</strong> This application uses localStorage for prototype data persistence. In a production environment, all data would be stored securely on server-side databases with proper encryption and access controls.
-            </Text>
-          </CardBody>
-        </Card>
+        <Box bg="var(--surface-dark)" p={3} borderRadius="lg" borderWidth="1px" borderStyle="dashed">
+          <Text fontSize="xs" color="var(--text-secondary)">
+            <strong>Data Storage:</strong> This app uses localStorage for prototyping. In production, data would be stored securely on servers.
+          </Text>
+        </Box>
       </VStack>
     </Box>
   );
