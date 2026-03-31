@@ -128,25 +128,24 @@ const SettingsPage = () => {
     <Box
       bg="var(--dark-bg)"
       minH="100vh"
-      display="flex"
-      justifyContent="center"
-      p={4}
+      w="100%"
     >
-      <Box 
-        py={6} 
-        px={4} 
-        maxW="450px" 
+      <Box
+        maxW="450px"
         mx="auto"
+        maxH="calc(100vh - 32px)"
         overflowY="auto"
+        mt={4}
+        mb={4}
         css={{
           '&::-webkit-scrollbar': { width: '8px' },
           '&::-webkit-scrollbar-track': { background: 'var(--surface-dark)' },
           '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
         }}
       >
-        <VStack spacing={6} align="center" mx="auto" textAlign="center">
+        <VStack spacing={6} align="center" textAlign="center" w="100%" py={6} px={4}>
         {/* Header */}
-        <Flex justify="space-between" align="center" wrap="wrap" gap={2}>
+        <Flex justify="space-between" align="center" wrap="wrap" gap={2} w="100%">
           <Heading color="var(--acid-yellow)" size="lg">
             Settings
           </Heading>
@@ -162,7 +161,7 @@ const SettingsPage = () => {
         </Flex>
 
         {/* Profile Section */}
-        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px">
+        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px" w="100%">
           <VStack spacing={3} align="center">
             <Avatar
               size="lg"
@@ -186,7 +185,7 @@ const SettingsPage = () => {
         </Box>
 
         {/* Change Password Section */}
-        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px">
+        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px" w="100%">
           <Heading size="sm" mb={3} color="var(--accent-cyan)">
             Change Password
           </Heading>
@@ -255,7 +254,7 @@ const SettingsPage = () => {
         </Box>
 
         {/* Session Management */}
-        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px">
+        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px" w="100%">
           <Heading size="sm" mb={2} color="var(--accent-pink)">
             Session
           </Heading>
@@ -272,7 +271,7 @@ const SettingsPage = () => {
         </Box>
 
         {/* Data Storage Notice */}
-        <Box bg="var(--surface-dark)" p={3} borderRadius="lg" borderWidth="1px" borderStyle="dashed">
+        <Box bg="var(--surface-dark)" p={3} borderRadius="lg" borderWidth="1px" borderStyle="dashed" w="100%">
           <Text fontSize="xs" color="var(--text-secondary)">
             <strong>Note:</strong> Uses localStorage for prototyping.
           </Text>

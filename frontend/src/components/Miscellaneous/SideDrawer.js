@@ -294,23 +294,6 @@ const SideDrawer = () => {
               >
                 Settings
               </MenuItem>
-              {user?.role === "admin" && (
-                <MenuItem 
-                  bg="var(--surface-dark)"
-                  color="var(--accent-yellow)"
-                  onClick={() => history.push("/admin")}
-                  _hover={{
-                    bg: "var(--surface-medium)",
-                    color: "var(--acid-yellow)",
-                  }}
-                  _active={{
-                    bg: "var(--surface-medium)",
-                    color: "var(--acid-yellow)",
-                  }}
-                >
-                  Admin Panel
-                </MenuItem>
-              )}
               <MenuDivider borderColor="var(--border-color)" />
               <MenuItem 
                 bg="var(--surface-dark)"
