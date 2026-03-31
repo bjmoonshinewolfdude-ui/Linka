@@ -9,7 +9,6 @@ import { AddIcon } from "@chakra-ui/icons";
 import { Text } from "@chakra-ui/layout";
 import { Stack } from "@chakra-ui/layout";
 import { getSender } from "../../Config/ChatLogics";
-import ChatLoading from "../ChatLoading";
 import GroupChatModal from "./GroupChatModal";
 import io from "socket.io-client";
 

@@ -5,11 +5,6 @@ import {
   InputRightElement,
   VStack,
   Button,
-  Text,
-  Input,
-  Box,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react";
 import React from "react";
 import { useToast } from "@chakra-ui/react";
