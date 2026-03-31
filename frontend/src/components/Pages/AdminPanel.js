@@ -20,6 +20,7 @@ import {
   Icon,
   Flex,
   Avatar,
+  useToast,
 } from "@chakra-ui/react";
 import { ArrowBackIcon, LockIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
