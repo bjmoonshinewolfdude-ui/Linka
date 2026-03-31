@@ -31,14 +31,17 @@ const sendMessage = asyncHandler(async (req, res) => {
 
   try {
     var message = await Message.create(newMessage);
-    message = await message.populate("sender", "name pic");
-    message = await message.populate("chat");
-    message = await User.populate(message, {
-      path: "chat.users",
-      select: "name pic email",
-    });
-    await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
-    res.json(message);
+    
+    // Run populate operations in parallel
+    const [populatedMessage] = await Promise.all([
+      Message.findById(message._id)
+        .populate("sender", "name pic")
+        .populate("chat")
+        .populate("chat.users", "name pic email"),
+      Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message })
+    ]);
+    
+    res.json(populatedMessage);
   } catch (error) {
     res.status(400);
     throw new Error(error.message);
