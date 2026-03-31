@@ -7,6 +7,9 @@ import {
   Button,
   Text,
   Input,
+  Box,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import React from "react";
 import { useToast } from "@chakra-ui/react";
@@ -25,6 +28,17 @@ const Signup = () => {
   const toast = useToast();
   const history = useHistory();
   const { setUser } = ChatState();
+
+  // Password validation
+  const passwordRequirements = [
+    { label: "8+ characters", test: (p) => p.length >= 8 },
+    { label: "Uppercase letter", test: (p) => /[A-Z]/.test(p) },
+    { label: "Lowercase letter", test: (p) => /[a-z]/.test(p) },
+    { label: "Number", test: (p) => /\d/.test(p) },
+    { label: "Special character", test: (p) => /[!@#$%^&*(),.?":{}|<>]/.test(p) },
+  ];
+
+  const isPasswordValid = passwordRequirements.every((req) => req.test(password));
 
   const handleClick = () => setShow(!show);
   const postDetails = (pics) => {
@@ -86,6 +100,19 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
+      setLoading(false);
+      return;
+    }
+    if (!isPasswordValid) {
+      toast({
+        title: "Password does not meet requirements",
+        description: "Password must be 8+ chars with uppercase, lowercase, number, and special character",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setLoading(false);
       return;
     }
     try {
@@ -217,6 +244,25 @@ const Signup = () => {
             </Button>
           </InputRightElement>
         </InputGroup>
+        {password.length > 0 && (
+          <Box mt={2} p={2} bg="var(--surface-dark)" borderRadius="md" borderWidth="1px" borderColor="var(--border-color)">
+            <Text fontSize="sm" color="var(--text-secondary)" mb={1}>
+              Password must have:
+            </Text>
+            <Box display="flex" flexWrap="wrap" gap={2}>
+              {passwordRequirements.map((req) => (
+                <Text
+                  key={req.label}
+                  fontSize="xs"
+                  color={req.test(password) ? "var(--accent-cyan)" : "var(--text-muted)"}
+                  fontWeight={req.test(password) ? "bold" : "normal"}
+                >
+                  {req.test(password) ? "✓" : "○"} {req.label}
+                </Text>
+              ))}
+            </Box>
+          </Box>
+        )}
       </FormControl>
       
       <FormControl id="confirm-password" isRequired>

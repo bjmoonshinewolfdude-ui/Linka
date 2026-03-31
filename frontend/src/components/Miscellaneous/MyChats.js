@@ -171,7 +171,24 @@ const MyChats = ({ fetchAgain }) => {
               </Text>
             </Box>
           ))}
-          {(!chats || chats.length === 0) && <ChatLoading />}
+          {(!chats || chats.length === 0) && (
+            <Box textAlign="center" py={8}>
+              <Text color="var(--text-secondary)" fontSize="lg" mb={2}>
+                No chats yet
+              </Text>
+              <Text color="var(--text-muted)" fontSize="sm" mb={4}>
+                Start a new chat or create a group!
+              </Text>
+              <GroupChatModal>
+                <Button
+                  className="btn-primary"
+                  size="sm"
+                >
+                  New Group Chat
+                </Button>
+              </GroupChatModal>
+            </Box>
+          )}
         </Stack>
       </Box>
     </Box>
