@@ -33,6 +33,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   // Use ref for socket and selectedChatCompare to persist across renders
   const socketRef = React.useRef(null);
   const selectedChatCompare = React.useRef(null);
+  const userRef = React.useRef(user);
 
   // Fetch messages
   const fetchMessages = async () => {
@@ -84,7 +85,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       
       // Check if user is part of this chat
       const isUserInChat = newMessageRecieved.chat.users.some(
-        (u) => u._id === user._id || u._id.toString?.() === user._id
+        (u) => u._id === userRef.current._id || u._id.toString?.() === userRef.current._id
       );
       
       console.log("Is user in chat:", isUserInChat);
@@ -136,6 +137,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
     // eslint-disable-next-line
   }, []);
+
+  // Update refs when dependencies change
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   // Track previous chat to leave room when switching
   const prevChatRef = React.useRef(null);
