@@ -12,6 +12,17 @@ const sendMessage = asyncHandler(async (req, res) => {
     return res.sendStatus(400);
   }
 
+  // Verify user is part of the chat
+  const chat = await Chat.findById(chatId);
+  if (!chat) {
+    return res.status(404).json({ message: "Chat not found" });
+  }
+  
+  const isUserInChat = chat.users.some((u) => u.toString() === req.user._id.toString());
+  if (!isUserInChat) {
+    return res.status(403).json({ message: "You are not a member of this chat" });
+  }
+
   var newMessage = {
     sender: req.user._id,
     content: content,
@@ -36,6 +47,17 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 const allMessages = asyncHandler(async (req, res) => {
   try {
+    // Verify user is part of the chat before returning messages
+    const chat = await Chat.findById(req.params.chatId);
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+    
+    const isUserInChat = chat.users.some((u) => u.toString() === req.user._id.toString());
+    if (!isUserInChat) {
+      return res.status(403).json({ message: "You are not a member of this chat" });
+    }
+    
     const messages = await Message.find({ chat: req.params.chatId })
       .populate("sender", "name pic email")
       .populate("chat");

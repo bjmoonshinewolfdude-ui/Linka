@@ -61,11 +61,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
+    socket.on("typing", (room) => {
+      if (room === selectedChat?._id) {
+        setIsTyping(true);
+      }
+    });
+    socket.on("stop typing", (room) => {
+      if (room === selectedChat?._id) {
+        setIsTyping(false);
+      }
+    });
 
     // eslint-disable-next-line
-  }, []);
+  }, [selectedChat]);
 
   useEffect(() => {
     fetchMessages();
@@ -87,10 +95,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
-        if (!notification.includes(newMessageRecieved)) {
-          setNotification([newMessageRecieved, ...notification]);
-          setFetchAgain(!fetchAgain);
+        // Check if we already have a notification for this chat
+        const existingNotifIndex = notification.findIndex(
+          (n) => n.chat._id === newMessageRecieved.chat._id
+        );
+        
+        if (existingNotifIndex === -1) {
+          // New chat notification - add with count 1
+          setNotification([{ ...newMessageRecieved, count: 1 }, ...notification]);
         }
+        // If already exists, don't add duplicate notification
+        setFetchAgain(!fetchAgain);
       } else {
         setMessages([...messages, newMessageRecieved]);
       }
