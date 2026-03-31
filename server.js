@@ -90,19 +90,10 @@ io.on("connection", (socket) => {
   console.log("New socket connection:", socket.id);
 
   socket.on("setup", (userData) => {
-    try {
-      // Handle both formats: { userId: "..." } or { _id: "..." }
-      const userId = userData?.userId || userData?._id;
-      if (!userId) {
-        console.log("No userId provided in setup");
-        return;
-      }
-      console.log("Socket setup for user:", userId);
-      addUserToOnlineList(userId.toString(), socket.id);
-      socket.emit("connected");
-    } catch (error) {
-      console.error("Error in socket setup:", error);
-    }
+    const { userId } = userData;
+    console.log("Socket setup for user:", userId);
+    addUserToOnlineList(userId, socket.id);
+    socket.emit("connected");
   });
 
   socket.on("join chat", (room) => {
@@ -116,30 +107,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("new message", (newMessageRecieved) => {
-    try {
-      const chat = newMessageRecieved.chat;
+    const chat = newMessageRecieved.chat;
 
-      if (!chat || !chat.users) {
-        console.log("No chat or chat.users in message");
-        return;
-      }
+    if (!chat.users) return;
 
-      console.log("New message received:", newMessageRecieved);
-      // Emit to all users in the chat individually (not just those in the room)
-      // so notifications work even when user is in a different chat
-      chat.users.forEach((user) => {
-        if (!user || !user._id) return;
-        const userIdStr = typeof user._id === 'string' ? user._id : user._id.toString?.() || String(user._id);
-        const userSocketId = onlineUsers.get(userIdStr);
-        console.log(`Looking for socket for user ${userIdStr}: ${userSocketId}`);
-        if (userSocketId && userSocketId !== socket.id) {
-          io.to(userSocketId).emit("message recieved", newMessageRecieved);
-          console.log(`Emitted message to user ${userIdStr} at socket ${userSocketId}`);
-        }
-      });
-    } catch (error) {
-      console.error("Error in new message handler:", error);
-    }
+    console.log("New message received:", newMessageRecieved);
+    // Emit to the chat room so all participants in that chat receive it
+    socket.to(chat._id).emit("message recieved", newMessageRecieved);
   });
 
   socket.on("typing", (room) => {
@@ -154,12 +128,4 @@ io.on("connection", (socket) => {
     removeUserFromOnlineList(socket.id);
     console.log("User disconnected");
   });
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

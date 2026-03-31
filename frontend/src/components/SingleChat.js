@@ -24,7 +24,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const toast = useToast();
-  const { user, selectedChat, setSelectedChat, setNotification } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } =
+    ChatState();
 
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -33,7 +34,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   // Use ref for socket and selectedChatCompare to persist across renders
   const socketRef = React.useRef(null);
   const selectedChatCompare = React.useRef(null);
-  const userRef = React.useRef(user);
 
   // Fetch messages
   const fetchMessages = async () => {
@@ -78,70 +78,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     };
     
-    const handleMessageReceived = (newMessageRecieved) => {
-      console.log("Message received via socket:", newMessageRecieved);
-      console.log("Current selected chat:", selectedChatCompare.current?._id);
-      console.log("Message chat ID:", newMessageRecieved.chat?._id);
-      
-      // Check if user is part of this chat
-      const isUserInChat = newMessageRecieved.chat.users.some(
-        (u) => u._id === userRef.current._id || u._id.toString?.() === userRef.current._id
-      );
-      
-      console.log("Is user in chat:", isUserInChat);
-      
-      if (!isUserInChat) return; // Don't process messages from chats user isn't in
-
-      const currentChatId = selectedChatCompare.current?._id?.toString?.() || selectedChatCompare.current?._id;
-      const messageChatId = newMessageRecieved.chat?._id?.toString?.() || newMessageRecieved.chat?._id;
-      
-      console.log("Comparing chat IDs - current:", currentChatId, "message:", messageChatId);
-
-      if (!selectedChatCompare.current || currentChatId !== messageChatId) {
-        console.log("Adding notification for chat:", messageChatId);
-        // Use functional update to avoid stale closure
-        setNotification((prevNotifications) => {
-          const existingNotifIndex = prevNotifications.findIndex(
-            (n) => n.chat._id === newMessageRecieved.chat._id || n.chat._id?.toString?.() === messageChatId
-          );
-          
-          if (existingNotifIndex === -1) {
-            return [{ ...newMessageRecieved, count: 1 }, ...prevNotifications];
-          } else {
-            const updatedNotifications = [...prevNotifications];
-            updatedNotifications[existingNotifIndex] = {
-              ...updatedNotifications[existingNotifIndex],
-              count: (updatedNotifications[existingNotifIndex].count || 1) + 1
-            };
-            return updatedNotifications;
-          }
-        });
-        setFetchAgain((prev) => !prev);
-      } else {
-        console.log("Adding message to current chat");
-        setMessages((prev) => [...prev, newMessageRecieved]);
-      }
-    };
-    
     socketRef.current.on("connected", handleConnected);
     socketRef.current.on("typing", handleTyping);
     socketRef.current.on("stop typing", handleStopTyping);
-    socketRef.current.on("message recieved", handleMessageReceived);
 
     return () => {
       socketRef.current.off("connected", handleConnected);
       socketRef.current.off("typing", handleTyping);
       socketRef.current.off("stop typing", handleStopTyping);
-      socketRef.current.off("message recieved", handleMessageReceived);
-      socketRef.current.disconnect();
     };
     // eslint-disable-next-line
   }, []);
-
-  // Update refs when dependencies change
-  useEffect(() => {
-    userRef.current = user;
-  }, [user]);
 
   // Track previous chat to leave room when switching
   const prevChatRef = React.useRef(null);
@@ -163,6 +110,43 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // eslint-disable-next-line
   }, [selectedChat]);
 
+  useEffect(() => {
+    socketRef.current.on("message recieved", (newMessageRecieved) => {
+      // Check if user is part of this chat
+      const isUserInChat = newMessageRecieved.chat.users.some(
+        (u) => u._id === user._id
+      );
+      
+      if (!isUserInChat) return; // Don't process messages from chats user isn't in
+
+      if (
+        !selectedChatCompare.current || // if chat is not selected or doesn't match current chat
+        selectedChatCompare.current._id !== newMessageRecieved.chat._id
+      ) {
+        // Check if we already have a notification for this chat
+        const existingNotifIndex = notification.findIndex(
+          (n) => n.chat._id === newMessageRecieved.chat._id
+        );
+        
+        if (existingNotifIndex === -1) {
+          // New chat notification - add with count 1
+          setNotification([{ ...newMessageRecieved, count: 1 }, ...notification]);
+        } else {
+          // Existing chat - increment the count
+          const updatedNotifications = [...notification];
+          updatedNotifications[existingNotifIndex] = {
+            ...updatedNotifications[existingNotifIndex],
+            count: (updatedNotifications[existingNotifIndex].count || 1) + 1
+          };
+          setNotification(updatedNotifications);
+        }
+        setFetchAgain(!fetchAgain);
+      } else {
+        setMessages([...messages, newMessageRecieved]);
+      }
+    });
+  });
+
   // Debounce timer for typing
   const typingTimeoutRef = React.useRef(null);
 
@@ -173,19 +157,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     if (event.key === "Enter" && newMessage && !isSending) {
       setIsSending(true);
       socketRef.current.emit("stop typing", selectedChat._id);
-      
-      // Optimistic update - add message immediately for instant UI feedback
-      const tempId = Date.now().toString();
-      const optimisticMessage = {
-        _id: tempId,
-        content: newMessage,
-        sender: user,
-        chat: selectedChat,
-        createdAt: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, optimisticMessage]);
-      setNewMessage("");
-      
       try {
         const config = {
           headers: {
@@ -195,17 +166,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         };
         const { data } = await axios.post(
           "/api/message",
-          { content: optimisticMessage.content, chatId: selectedChat._id },
+          { content: newMessage, chatId: selectedChat._id },
           config,
         );
-        // Replace optimistic message with real message from server
-        setMessages((prev) => prev.map((msg) => 
-          msg._id === tempId ? data : msg
-        ));
+        setMessages((prev) => [...prev, data]);
         socketRef.current.emit("new message", data);
+        setNewMessage("");
       } catch (error) {
-        // Remove optimistic message on error
-        setMessages((prev) => prev.filter((msg) => msg._id !== tempId));
         toast({
           title: "Error Occurred!",
           description: "Failed to send message",
