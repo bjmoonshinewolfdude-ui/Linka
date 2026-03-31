@@ -112,8 +112,14 @@ io.on("connection", (socket) => {
     if (!chat.users) return;
 
     console.log("New message received:", newMessageRecieved);
-    // Emit to the chat room so all participants in that chat receive it
-    socket.to(chat._id).emit("message recieved", newMessageRecieved);
+    // Emit to all users in the chat individually (not just those in the room)
+    // so notifications work even when user is in a different chat
+    chat.users.forEach((user) => {
+      const userSocketId = onlineUsers.get(user._id.toString());
+      if (userSocketId && userSocketId !== socket.id) {
+        io.to(userSocketId).emit("message recieved", newMessageRecieved);
+      }
+    });
   });
 
   socket.on("typing", (room) => {
