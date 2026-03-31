@@ -76,6 +76,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
+      // Check if user is part of this chat
+      const isUserInChat = newMessageRecieved.chat.users.some(
+        (u) => u._id === user._id
+      );
+      
+      if (!isUserInChat) return; // Don't process messages from chats user isn't in
+
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
         selectedChatCompare._id !== newMessageRecieved.chat._id
@@ -90,9 +97,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
   });
 
+  // Debounce timer for typing
+  const typingTimeoutRef = React.useRef(null);
+
   // Send message
+  const [isSending, setIsSending] = useState(false);
+
   const sendMessage = async (event) => {
-    if (event.key === "Enter" && newMessage) {
+    if (event.key === "Enter" && newMessage && !isSending) {
+      setIsSending(true);
       socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
@@ -118,11 +131,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           isClosable: true,
           position: "bottom",
         });
+      } finally {
+        setIsSending(false);
       }
     }
   };
 
-  // Typing indicator
+  // Typing indicator with debounce
   const typingHandler = (event) => {
     setNewMessage(event.target.value);
 
@@ -133,17 +148,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       socket.emit("typing", selectedChat._id);
     }
 
-    const lastTypingTime = new Date().getTime();
-    const timerLength = 3000;
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
 
-    setTimeout(() => {
-      const timeNow = new Date().getTime();
-      const timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", selectedChat._id);
-        setTyping(false);
-      }
-    }, timerLength);
+    // Set new timeout to stop typing
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stop typing", selectedChat._id);
+      setTyping(false);
+    }, 3000);
   };
 
   return (

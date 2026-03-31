@@ -142,7 +142,9 @@ const MyChats = ({ fetchAgain }) => {
         overflowY={"hidden"}
       >
         <Stack overflowY={"scroll"}>
-          {(chats || []).map((chat) => (
+          {(chats || [])
+            .filter((chat) => chat && chat._id && chat.users && chat.users.length > 0)
+            .map((chat) => (
             <Box
               key={chat._id}
               onClick={() => setSelectedChat(chat)}
