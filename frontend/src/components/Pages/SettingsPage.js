@@ -14,8 +14,12 @@ import {
   Flex,
   InputGroup,
   InputRightElement,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
+import { ChatState } from "../../Context/ChatProvider";
 
 const SettingsPage = () => {
   const { user, setUser } = ChatState();
