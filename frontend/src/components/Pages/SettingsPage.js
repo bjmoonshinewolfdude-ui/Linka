@@ -14,8 +14,6 @@ import {
   Flex,
   InputGroup,
   InputRightElement,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
