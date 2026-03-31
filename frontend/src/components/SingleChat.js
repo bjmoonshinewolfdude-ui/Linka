@@ -77,11 +77,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // eslint-disable-next-line
   }, [selectedChat]);
 
+  // Track previous chat to leave room when switching
+  const prevChatRef = React.useRef(null);
+
   useEffect(() => {
+    // Leave previous chat room if exists
+    if (prevChatRef.current && prevChatRef.current._id !== selectedChat?._id) {
+      socket.emit("leave chat", prevChatRef.current._id);
+    }
+    
     fetchMessages();
     selectedChatCompare = selectedChat;
     // Clear typing indicator when switching chats
     setIsTyping(false);
+    
+    // Update previous chat ref
+    prevChatRef.current = selectedChat;
+    
     // eslint-disable-next-line
   }, [selectedChat]);
 

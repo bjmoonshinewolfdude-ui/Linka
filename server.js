@@ -101,6 +101,11 @@ io.on("connection", (socket) => {
     console.log("User joined room:", room);
   });
 
+  socket.on("leave chat", (room) => {
+    socket.leave(room);
+    console.log("User left room:", room);
+  });
+
   socket.on("new message", (newMessageRecieved) => {
     const chat = newMessageRecieved.chat;
 
