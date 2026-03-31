@@ -107,19 +107,30 @@ io.on("connection", (socket) => {
   });
 
   socket.on("new message", (newMessageRecieved) => {
-    const chat = newMessageRecieved.chat;
+    try {
+      const chat = newMessageRecieved.chat;
 
-    if (!chat.users) return;
-
-    console.log("New message received:", newMessageRecieved);
-    // Emit to all users in the chat individually (not just those in the room)
-    // so notifications work even when user is in a different chat
-    chat.users.forEach((user) => {
-      const userSocketId = onlineUsers.get(user._id.toString());
-      if (userSocketId && userSocketId !== socket.id) {
-        io.to(userSocketId).emit("message recieved", newMessageRecieved);
+      if (!chat || !chat.users) {
+        console.log("No chat or chat.users in message");
+        return;
       }
-    });
+
+      console.log("New message received:", newMessageRecieved);
+      // Emit to all users in the chat individually (not just those in the room)
+      // so notifications work even when user is in a different chat
+      chat.users.forEach((user) => {
+        if (!user || !user._id) return;
+        const userIdStr = typeof user._id === 'string' ? user._id : user._id.toString?.() || String(user._id);
+        const userSocketId = onlineUsers.get(userIdStr);
+        console.log(`Looking for socket for user ${userIdStr}: ${userSocketId}`);
+        if (userSocketId && userSocketId !== socket.id) {
+          io.to(userSocketId).emit("message recieved", newMessageRecieved);
+          console.log(`Emitted message to user ${userIdStr} at socket ${userSocketId}`);
+        }
+      });
+    } catch (error) {
+      console.error("Error in new message handler:", error);
+    }
   });
 
   socket.on("typing", (room) => {
