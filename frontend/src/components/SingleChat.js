@@ -79,8 +79,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     fetchMessages();
-
     selectedChatCompare = selectedChat;
+    // Clear typing indicator when switching chats
+    setIsTyping(false);
     // eslint-disable-next-line
   }, [selectedChat]);
 
