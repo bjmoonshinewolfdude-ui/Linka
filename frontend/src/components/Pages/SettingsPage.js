@@ -6,7 +6,6 @@ import {
   FormLabel,
   Input,
   VStack,
-  HStack,
   Heading,
   Text,
   Avatar,
@@ -16,7 +15,7 @@ import {
   AlertIcon,
   Flex,
 } from "@chakra-ui/react";
-import { ArrowBackIcon, LockIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
