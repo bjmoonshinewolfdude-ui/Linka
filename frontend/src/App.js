@@ -4,6 +4,9 @@ import { HStack } from "@chakra-ui/react";
 import { useEffect } from "react";
 import Homepage from "./Pages/Homepage";
 import Chatpage from "./Pages/Chatpage";
+import AdminPanel from "./components/Pages/AdminPanel";
+import SettingsPage from "./components/Pages/SettingsPage";
+import AccessDenied from "./components/Pages/AccessDenied";
 
 function App() {
   useEffect(() => {
@@ -69,6 +72,9 @@ function App() {
       <HStack>
         <Route path="/" component={Homepage} exact />
         <Route path="/chats" component={Chatpage} />
+        <Route path="/admin" component={AdminPanel} />
+        <Route path="/settings" component={SettingsPage} />
+        <Route path="/access-denied" component={AccessDenied} />
       </HStack>
     </div>
   );

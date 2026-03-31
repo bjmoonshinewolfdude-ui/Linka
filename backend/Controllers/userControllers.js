@@ -62,6 +62,7 @@ const registerUser = expressAsyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       pic: user.pic,
+      role: user.role,
       token: generateToken(user._id),
     });
   } else {
@@ -81,6 +82,7 @@ const authUser = expressAsyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       pic: user.pic,
+      role: user.role,
       token: generateToken(user._id),
     });
   } else {

@@ -7,7 +7,7 @@ import {
   MenuButton,
   Avatar,
 } from "@chakra-ui/react";
-import { BellIcon } from "@chakra-ui/icons";
+import { BellIcon, SettingsIcon } from "@chakra-ui/icons";
 import React from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import { MenuList, MenuItem, MenuDivider } from "@chakra-ui/react";
@@ -279,6 +279,38 @@ const SideDrawer = () => {
                   My Profile
                 </MenuItem>
               </ProfileModal>
+              <MenuItem 
+                bg="var(--surface-dark)"
+                color="var(--text-primary)"
+                onClick={() => history.push("/settings")}
+                _hover={{
+                  bg: "var(--surface-medium)",
+                  color: "var(--accent-cyan)",
+                }}
+                _active={{
+                  bg: "var(--surface-medium)",
+                  color: "var(--accent-cyan)",
+                }}
+              >
+                Settings
+              </MenuItem>
+              {user?.role === "admin" && (
+                <MenuItem 
+                  bg="var(--surface-dark)"
+                  color="var(--accent-yellow)"
+                  onClick={() => history.push("/admin")}
+                  _hover={{
+                    bg: "var(--surface-medium)",
+                    color: "var(--acid-yellow)",
+                  }}
+                  _active={{
+                    bg: "var(--surface-medium)",
+                    color: "var(--acid-yellow)",
+                  }}
+                >
+                  Admin Panel
+                </MenuItem>
+              )}
               <MenuDivider borderColor="var(--border-color)" />
               <MenuItem 
                 bg="var(--surface-dark)"

@@ -155,8 +155,43 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage && !isSending) {
+      // Message validation
+      const maxLength = 500;
+      const sanitizedMessage = newMessage.trim();
+      
+      if (!sanitizedMessage) {
+        toast({
+          title: "Empty Message",
+          description: "Cannot send empty message",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+          position: "bottom",
+        });
+        return;
+      }
+      
+      if (sanitizedMessage.length > maxLength) {
+        toast({
+          title: "Message Too Long",
+          description: `Message must be less than ${maxLength} characters`,
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+          position: "bottom",
+        });
+        return;
+      }
+
+      // Basic XSS sanitization - remove script tags
+      const sanitizedContent = sanitizedMessage
+        .replace(/<script[^>]*>.*?<\/script>/gi, '')
+        .replace(/<\/script>/gi, '')
+        .replace(/<script(.*?)>/gi, '');
+
       setIsSending(true);
       socketRef.current.emit("stop typing", selectedChat._id);
+      
       try {
         const config = {
           headers: {
@@ -166,12 +201,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         };
         const { data } = await axios.post(
           "/api/message",
-          { content: newMessage, chatId: selectedChat._id },
+          { content: sanitizedContent, chatId: selectedChat._id },
           config,
         );
         setMessages((prev) => [...prev, data]);
         socketRef.current.emit("new message", data);
         setNewMessage("");
+        
+        // Log audit
+        logAuditAction("MESSAGE_SENT", user.name, `Sent message in chat ${selectedChat._id}`);
       } catch (error) {
         toast({
           title: "Error Occurred!",
@@ -185,6 +223,22 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setIsSending(false);
       }
     }
+  };
+
+  // Audit logging function
+  const logAuditAction = (action, userName, details) => {
+    const logs = JSON.parse(localStorage.getItem("auditLog") || "[]");
+    logs.push({
+      action,
+      user: userName,
+      details,
+      timestamp: new Date().toISOString(),
+    });
+    // Keep only last 100 entries
+    if (logs.length > 100) {
+      logs.shift();
+    }
+    localStorage.setItem("auditLog", JSON.stringify(logs));
   };
 
   // Typing indicator with debounce
