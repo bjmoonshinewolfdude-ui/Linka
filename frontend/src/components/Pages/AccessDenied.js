@@ -28,7 +28,7 @@ const AccessDenied = () => {
       w="full"
       mx="auto"
     >
-      <Box py={6} px={4} w="full" maxW="450px">
+      <Box py={6} px={4} maxW="450px">
         <VStack spacing={6} align="stretch" w="full" textAlign="center">
           <Icon
             as={LockIcon}
