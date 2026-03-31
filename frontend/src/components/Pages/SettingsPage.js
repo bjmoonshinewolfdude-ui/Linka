@@ -20,7 +20,6 @@ import {
   Icon,
   Flex,
   Stack,
-  keyframes,
 } from "@chakra-ui/react";
 import { ArrowBackIcon, SettingsIcon, LockIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
