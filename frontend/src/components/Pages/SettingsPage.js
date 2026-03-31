@@ -136,7 +136,7 @@ const SettingsPage = () => {
         py={6} 
         px={4} 
         maxW="450px" 
-        w="100%"
+        mx="auto"
         overflowY="auto"
         css={{
           '&::-webkit-scrollbar': { width: '8px' },
@@ -144,7 +144,7 @@ const SettingsPage = () => {
           '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
         }}
       >
-        <VStack spacing={4} align="stretch" w="full">
+        <VStack spacing={6} align="center" mx="auto" textAlign="center">
         {/* Header */}
         <Flex justify="space-between" align="center" wrap="wrap" gap={2}>
           <Heading color="var(--acid-yellow)" size="lg">
