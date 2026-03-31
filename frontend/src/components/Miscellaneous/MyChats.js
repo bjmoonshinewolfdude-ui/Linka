@@ -176,7 +176,7 @@ const MyChats = ({ fetchAgain }) => {
                 No chats yet
               </Text>
               <Text color="var(--text-muted)" fontSize="sm" mb={4}>
-                Start a new chat or create a group!
+                Search to start a new chat or create a group!
               </Text>
               <GroupChatModal>
                 <Button

@@ -11,49 +11,38 @@ import {
   Avatar,
   Badge,
   useToast,
-  Alert,
-  AlertIcon,
   Flex,
+  InputGroup,
+  InputRightElement,
 } from "@chakra-ui/react";
-import { useHistory } from "react-router-dom";
-import { ChatState } from "../../Context/ChatProvider";
+import axios from "axios";
 
 const SettingsPage = () => {
   const { user, setUser } = ChatState();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [newName, setNewName] = useState(user?.name || "");
+  const [newPic, setNewPic] = useState(user?.pic || "");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
   const history = useHistory();
 
   // Password validation rules
-  const validatePassword = (password) => {
-    const minLength = 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const passwordRequirements = [
+    { label: "8+ characters", test: (p) => p.length >= 8 },
+    { label: "Uppercase letter", test: (p) => /[A-Z]/.test(p) },
+    { label: "Lowercase letter", test: (p) => /[a-z]/.test(p) },
+    { label: "Number", test: (p) => /\d/.test(p) },
+    { label: "Special character", test: (p) => /[!@#$%^&*(),.?":{}|<>]/.test(p) },
+  ];
 
-    if (password.length < minLength) {
-      return "Password must be at least 8 characters long";
-    }
-    if (!hasUpperCase) {
-      return "Password must contain at least one uppercase letter";
-    }
-    if (!hasLowerCase) {
-      return "Password must contain at least one lowercase letter";
-    }
-    if (!hasNumber) {
-      return "Password must contain at least one number";
-    }
-    if (!hasSpecialChar) {
-      return "Password must contain at least one special character";
-    }
-    return null;
-  };
+  const isPasswordValid = passwordRequirements.every((req) => req.test(newPassword));
 
   const handlePasswordChange = () => {
-    // Validation
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast({
         title: "Missing Fields",
@@ -64,7 +53,6 @@ const SettingsPage = () => {
       });
       return;
     }
-
     if (newPassword !== confirmPassword) {
       toast({
         title: "Passwords Don't Match",
@@ -75,20 +63,16 @@ const SettingsPage = () => {
       });
       return;
     }
-
-    const validationError = validatePassword(newPassword);
-    if (validationError) {
+    if (!isPasswordValid) {
       toast({
         title: "Invalid Password",
-        description: validationError,
+        description: "Password does not meet all requirements",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
       return;
     }
-
-    // Simulate password change (mock for school project)
     toast({
       title: "Password Updated",
       description: "This is a demo. In production, this would update your password securely.",
@@ -96,14 +80,49 @@ const SettingsPage = () => {
       duration: 3000,
       isClosable: true,
     });
-
-    // Clear fields
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-
-    // Log to audit
     logAuditAction("PASSWORD_CHANGE", user.name, "User changed password");
+  };
+
+  const handleProfileUpdate = () => {
+    const updatedUser = { ...user, name: newName, pic: newPic };
+    localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    toast({
+      title: "Profile Updated",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+    logAuditAction("PROFILE_UPDATE", user.name, "User updated profile");
+  };
+
+  const postDetails = (pics) => {
+    if (!pics) return;
+    setLoading(true);
+    const data = new FormData();
+    data.append("file", pics);
+    data.append("upload_preset", "LINKER");
+    data.append("cloud_name", "dmrdwv8d0");
+    axios
+      .post("https://api.cloudinary.com/v1_1/dmrdwv8d0/image/upload", data)
+      .then((response) => {
+        setNewPic(response.data.url.toString());
+        setLoading(false);
+        toast({
+          title: "Image uploaded successfully!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      })
+      .catch((error) => {
+        console.log("Cloudinary error:", error);
+        setLoading(false);
+      });
   };
 
   const logAuditAction = (action, userName, details) => {
@@ -165,12 +184,49 @@ const SettingsPage = () => {
           <VStack spacing={3} align="center">
             <Avatar
               size="lg"
-              src={user?.pic}
-              name={user?.name}
+              src={newPic || user?.pic}
+              name={newName || user?.name}
               border="3px solid var(--accent-cyan)"
             />
+            <FormControl>
+              <FormLabel fontSize="sm">Profile Picture URL</FormLabel>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => postDetails(e.target.files[0])}
+                bg="var(--dark-bg)"
+                borderColor="var(--border-color)"
+                color="var(--text-primary)"
+                size="sm"
+                p={1}
+                _focus={{ borderColor: "var(--accent-cyan)" }}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel fontSize="sm">Name</FormLabel>
+              <Input
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder={user?.name}
+                bg="var(--dark-bg)"
+                borderColor="var(--border-color)"
+                color="var(--text-primary)"
+                size="sm"
+                _focus={{ borderColor: "var(--accent-cyan)" }}
+              />
+            </FormControl>
+            <Button
+              onClick={handleProfileUpdate}
+              bg="var(--accent-cyan)"
+              color="var(--dark-bg)"
+              width="100%"
+              _hover={{ bg: "var(--acid-yellow)" }}
+              size="sm"
+              isLoading={loading}
+            >
+              Update Profile
+            </Button>
             <Box textAlign="center">
-              <Heading size="sm">{user?.name}</Heading>
               <Text color="var(--text-secondary)" fontSize="sm">{user?.email}</Text>
               <Badge
                 mt={1}
@@ -190,54 +246,108 @@ const SettingsPage = () => {
             Change Password
           </Heading>
 
-          <Alert status="info" mb={3} bg="var(--surface-medium)" borderRadius="md" size="sm">
-            <AlertIcon boxSize={4} />
-            <Text fontSize="xs">
-              8+ chars, uppercase, lowercase, number, special char.
-            </Text>
-          </Alert>
-
           <VStack spacing={3}>
             <FormControl>
               <FormLabel fontSize="sm">Current Password</FormLabel>
-              <Input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                bg="var(--dark-bg)"
-                borderColor="var(--border-color)"
-                color="var(--text-primary)"
-                size="sm"
-                _focus={{ borderColor: "var(--accent-cyan)" }}
-              />
+              <InputGroup>
+                <Input
+                  type={showCurrent ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  bg="var(--dark-bg)"
+                  borderColor="var(--border-color)"
+                  color="var(--text-primary)"
+                  size="sm"
+                  _focus={{ borderColor: "var(--accent-cyan)" }}
+                />
+                <InputRightElement width="4.5rem">
+                  <Button 
+                    h="1.75rem" 
+                    size="xs" 
+                    onClick={() => setShowCurrent(!showCurrent)}
+                    bg="transparent"
+                    color="var(--text-secondary)"
+                    _hover={{ color: "var(--accent-cyan)" }}
+                  >
+                    {showCurrent ? "Hide" : "Show"}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
             </FormControl>
 
             <FormControl>
               <FormLabel fontSize="sm">New Password</FormLabel>
-              <Input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                bg="var(--dark-bg)"
-                borderColor="var(--border-color)"
-                color="var(--text-primary)"
-                size="sm"
-                _focus={{ borderColor: "var(--accent-cyan)" }}
-              />
+              <InputGroup>
+                <Input
+                  type={showNew ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  bg="var(--dark-bg)"
+                  borderColor="var(--border-color)"
+                  color="var(--text-primary)"
+                  size="sm"
+                  _focus={{ borderColor: "var(--accent-cyan)" }}
+                />
+                <InputRightElement width="4.5rem">
+                  <Button 
+                    h="1.75rem" 
+                    size="xs" 
+                    onClick={() => setShowNew(!showNew)}
+                    bg="transparent"
+                    color="var(--text-secondary)"
+                    _hover={{ color: "var(--accent-cyan)" }}
+                  >
+                    {showNew ? "Hide" : "Show"}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              {newPassword.length > 0 && (
+                <Box mt={2} p={2} bg="var(--dark-bg)" borderRadius="md" borderWidth="1px" borderColor="var(--border-color)">
+                  <Text fontSize="sm" color="var(--text-secondary)" mb={1}>
+                    Password must have:
+                  </Text>
+                  <Box display="flex" flexWrap="wrap" gap={2}>
+                    {passwordRequirements.map((req) => (
+                      <Text
+                        key={req.label}
+                        fontSize="xs"
+                        color={req.test(newPassword) ? "var(--accent-cyan)" : "var(--text-muted)"}
+                        fontWeight={req.test(newPassword) ? "bold" : "normal"}
+                      >
+                        {req.test(newPassword) ? "✓" : "○"} {req.label}
+                      </Text>
+                    ))}
+                  </Box>
+                </Box>
+              )}
             </FormControl>
 
             <FormControl>
               <FormLabel fontSize="sm">Confirm New Password</FormLabel>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                bg="var(--dark-bg)"
-                borderColor="var(--border-color)"
-                color="var(--text-primary)"
-                size="sm"
-                _focus={{ borderColor: "var(--accent-cyan)" }}
-              />
+              <InputGroup>
+                <Input
+                  type={showConfirm ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  bg="var(--dark-bg)"
+                  borderColor="var(--border-color)"
+                  color="var(--text-primary)"
+                  size="sm"
+                  _focus={{ borderColor: "var(--accent-cyan)" }}
+                />
+                <InputRightElement width="4.5rem">
+                  <Button 
+                    h="1.75rem" 
+                    size="xs" 
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    bg="transparent"
+                    color="var(--text-secondary)"
+                    _hover={{ color: "var(--accent-cyan)" }}
+                  >
+                    {showConfirm ? "Hide" : "Show"}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
             </FormControl>
 
             <Button
