@@ -78,40 +78,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     };
     
-    socketRef.current.on("connected", handleConnected);
-    socketRef.current.on("typing", handleTyping);
-    socketRef.current.on("stop typing", handleStopTyping);
-
-    return () => {
-      socketRef.current.off("connected", handleConnected);
-      socketRef.current.off("typing", handleTyping);
-      socketRef.current.off("stop typing", handleStopTyping);
-    };
-    // eslint-disable-next-line
-  }, []);
-
-  // Track previous chat to leave room when switching
-  const prevChatRef = React.useRef(null);
-
-  useEffect(() => {
-    // Leave previous chat room if exists
-    if (prevChatRef.current && prevChatRef.current._id !== selectedChat?._id) {
-      socketRef.current.emit("leave chat", prevChatRef.current._id);
-    }
-    
-    fetchMessages();
-    selectedChatCompare.current = selectedChat;
-    // Clear typing indicator when switching chats
-    setIsTyping(false);
-    
-    // Update previous chat ref
-    prevChatRef.current = selectedChat;
-    
-    // eslint-disable-next-line
-  }, [selectedChat]);
-
-  useEffect(() => {
-    socketRef.current.on("message recieved", (newMessageRecieved) => {
+    const handleMessageReceived = (newMessageRecieved) => {
       // Check if user is part of this chat
       const isUserInChat = newMessageRecieved.chat.users.some(
         (u) => u._id === user._id
@@ -142,10 +109,44 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         }
         setFetchAgain(!fetchAgain);
       } else {
-        setMessages([...messages, newMessageRecieved]);
+        setMessages((prev) => [...prev, newMessageRecieved]);
       }
-    });
-  });
+    };
+    
+    socketRef.current.on("connected", handleConnected);
+    socketRef.current.on("typing", handleTyping);
+    socketRef.current.on("stop typing", handleStopTyping);
+    socketRef.current.on("message recieved", handleMessageReceived);
+
+    return () => {
+      socketRef.current.off("connected", handleConnected);
+      socketRef.current.off("typing", handleTyping);
+      socketRef.current.off("stop typing", handleStopTyping);
+      socketRef.current.off("message recieved", handleMessageReceived);
+      socketRef.current.disconnect();
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  // Track previous chat to leave room when switching
+  const prevChatRef = React.useRef(null);
+
+  useEffect(() => {
+    // Leave previous chat room if exists
+    if (prevChatRef.current && prevChatRef.current._id !== selectedChat?._id) {
+      socketRef.current.emit("leave chat", prevChatRef.current._id);
+    }
+    
+    fetchMessages();
+    selectedChatCompare.current = selectedChat;
+    // Clear typing indicator when switching chats
+    setIsTyping(false);
+    
+    // Update previous chat ref
+    prevChatRef.current = selectedChat;
+    
+    // eslint-disable-next-line
+  }, [selectedChat]);
 
   // Debounce timer for typing
   const typingTimeoutRef = React.useRef(null);
