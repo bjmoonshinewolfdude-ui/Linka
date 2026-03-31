@@ -22,7 +22,7 @@ import {
   Stack,
   keyframes,
 } from "@chakra-ui/react";
-import { ArrowBackIcon, SettingsIcon, LockIcon, LogOutIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, SettingsIcon, LockIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
@@ -329,7 +329,7 @@ const SettingsPage = () => {
         <Card bg="var(--surface-dark)" borderWidth="1px" borderColor="var(--border-color)" borderRadius="xl" overflow="hidden">
           <CardHeader bg="var(--surface-medium)" borderBottomWidth="1px" borderColor="var(--border-color)" py={5} px={8}>
             <HStack spacing={3}>
-              <Icon as={LogOutIcon} color="var(--accent-pink)" />
+              <Icon as={ArrowRightIcon} color="var(--accent-pink)" />
               <Heading size="md" color="var(--accent-pink)">
                 Session Management
               </Heading>
