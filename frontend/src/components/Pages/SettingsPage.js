@@ -15,7 +15,6 @@ import {
   AlertIcon,
   Flex,
 } from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
