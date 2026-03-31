@@ -62,12 +62,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", (room) => {
-      if (room === selectedChat?._id) {
+      // Convert both to strings for comparison
+      if (room && selectedChat?._id && room.toString() === selectedChat._id.toString()) {
         setIsTyping(true);
       }
     });
     socket.on("stop typing", (room) => {
-      if (room === selectedChat?._id) {
+      // Convert both to strings for comparison
+      if (room && selectedChat?._id && room.toString() === selectedChat._id.toString()) {
         setIsTyping(false);
       }
     });
@@ -103,8 +105,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         if (existingNotifIndex === -1) {
           // New chat notification - add with count 1
           setNotification([{ ...newMessageRecieved, count: 1 }, ...notification]);
+        } else {
+          // Existing chat - increment the count
+          const updatedNotifications = [...notification];
+          updatedNotifications[existingNotifIndex] = {
+            ...updatedNotifications[existingNotifIndex],
+            count: (updatedNotifications[existingNotifIndex].count || 1) + 1
+          };
+          setNotification(updatedNotifications);
         }
-        // If already exists, don't add duplicate notification
         setFetchAgain(!fetchAgain);
       } else {
         setMessages([...messages, newMessageRecieved]);

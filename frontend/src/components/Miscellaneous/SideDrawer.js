@@ -188,7 +188,7 @@ const SideDrawer = () => {
                   minW="18px"
                   textAlign="center"
                 >
-                  {notification.length}
+                  {notification.reduce((acc, notif) => acc + (notif.count || 1), 0)}
                 </Box>
               )}
             </MenuButton>
