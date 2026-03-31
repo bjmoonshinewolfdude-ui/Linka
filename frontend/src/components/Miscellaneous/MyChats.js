@@ -17,7 +17,7 @@ const ENDPOINT = process.env.NODE_ENV === "production" ? window.location.origin 
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = React.useState();
-  const { setSelectedChat, chats, user, setChats, selectedChat } = ChatState();
+  const { setSelectedChat, chats, user, setChats, selectedChat, notification, setNotification } = ChatState();
   const toast = useToast();
   const socketRef = React.useRef();
 
@@ -40,6 +40,12 @@ const MyChats = ({ fetchAgain }) => {
         position: "bottom-left",
       });
     }
+  };
+
+  const handleChatClick = (chat) => {
+    setSelectedChat(chat);
+    // Clear notifications for this chat
+    setNotification(notification.filter((n) => n.chat._id !== chat._id));
   };
 
   // Separate effect for socket setup - runs once
@@ -147,7 +153,7 @@ const MyChats = ({ fetchAgain }) => {
             .map((chat) => (
             <Box
               key={chat._id}
-              onClick={() => setSelectedChat(chat)}
+              onClick={() => handleChatClick(chat)}
               cursor="pointer"
               bg={selectedChat === chat ? "var(--accent-cyan)" : "var(--surface-dark)"}
               color={selectedChat === chat ? "var(--dark-bg)" : "var(--text-primary)"}
