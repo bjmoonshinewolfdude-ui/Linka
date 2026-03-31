@@ -90,24 +90,27 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         !selectedChatCompare.current || // if chat is not selected or doesn't match current chat
         selectedChatCompare.current._id !== newMessageRecieved.chat._id
       ) {
-        // Check if we already have a notification for this chat
-        const existingNotifIndex = notification.findIndex(
-          (n) => n.chat._id === newMessageRecieved.chat._id
-        );
-        
-        if (existingNotifIndex === -1) {
-          // New chat notification - add with count 1
-          setNotification([{ ...newMessageRecieved, count: 1 }, ...notification]);
-        } else {
-          // Existing chat - increment the count
-          const updatedNotifications = [...notification];
-          updatedNotifications[existingNotifIndex] = {
-            ...updatedNotifications[existingNotifIndex],
-            count: (updatedNotifications[existingNotifIndex].count || 1) + 1
-          };
-          setNotification(updatedNotifications);
-        }
-        setFetchAgain(!fetchAgain);
+        // Use functional update to avoid stale closure
+        setNotification((prevNotifications) => {
+          // Check if we already have a notification for this chat
+          const existingNotifIndex = prevNotifications.findIndex(
+            (n) => n.chat._id === newMessageRecieved.chat._id
+          );
+          
+          if (existingNotifIndex === -1) {
+            // New chat notification - add with count 1
+            return [{ ...newMessageRecieved, count: 1 }, ...prevNotifications];
+          } else {
+            // Existing chat - increment the count
+            const updatedNotifications = [...prevNotifications];
+            updatedNotifications[existingNotifIndex] = {
+              ...updatedNotifications[existingNotifIndex],
+              count: (updatedNotifications[existingNotifIndex].count || 1) + 1
+            };
+            return updatedNotifications;
+          }
+        });
+        setFetchAgain((prev) => !prev);
       } else {
         setMessages((prev) => [...prev, newMessageRecieved]);
       }
