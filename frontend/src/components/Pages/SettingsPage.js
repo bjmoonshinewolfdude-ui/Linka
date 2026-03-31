@@ -137,7 +137,7 @@ const SettingsPage = () => {
         '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
       }}
     >
-      <Box py={6} px={4} maxW="450px">
+      <Box py={6} px={4} maxW="450px" mx="auto">
         <VStack spacing={4} align="stretch" w="full">
         {/* Header */}
         <Flex justify="space-between" align="center" wrap="wrap" gap={2}>
