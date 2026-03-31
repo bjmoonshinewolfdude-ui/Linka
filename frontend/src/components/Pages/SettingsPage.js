@@ -128,8 +128,8 @@ const SettingsPage = () => {
     <Box
       bg="var(--dark-bg)"
       minH="100vh"
-      py={6}
-      px={4}
+      display="flex"
+      justifyContent="center"
       overflowY="auto"
       css={{
         '&::-webkit-scrollbar': { width: '8px' },
@@ -137,7 +137,8 @@ const SettingsPage = () => {
         '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
       }}
     >
-      <VStack spacing={4} align="stretch" maxW="450px" mx="auto" w="full">
+      <Box py={6} px={4} w="full" maxW="450px">
+        <VStack spacing={4} align="stretch" w="full">
         {/* Header */}
         <Flex justify="space-between" align="center" wrap="wrap" gap={2}>
           <Heading color="var(--acid-yellow)" size="lg">
@@ -271,6 +272,7 @@ const SettingsPage = () => {
           </Text>
         </Box>
       </VStack>
+      </Box>
     </Box>
   );
 };
