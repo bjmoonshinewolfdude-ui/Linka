@@ -16,12 +16,13 @@ const AccessDenied = () => {
   return (
     <Box
       bg="var(--dark-bg)"
-      h="100vh"
+      minH="100vh"
       display="flex"
-      flexDirection="column"
-      overflowY="auto"
+      alignItems="center"
+      justifyContent="center"
+      p={4}
     >
-      <VStack spacing={6} textAlign="center" maxW="400px" mx="auto" my="auto" p={4}>
+      <VStack spacing={6} textAlign="center" maxW="400px">
         <Icon
           as={LockIcon}
           boxSize={16}
