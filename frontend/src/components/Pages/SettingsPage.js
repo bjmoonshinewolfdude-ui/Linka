@@ -128,9 +128,9 @@ const SettingsPage = () => {
   return (
     <Box
       bg="var(--dark-bg)"
-      minH="100vh"
-      py={6}
-      px={4}
+      h="100vh"
+      display="flex"
+      flexDirection="column"
       overflowY="auto"
       css={{
         '&::-webkit-scrollbar': { width: '8px' },
@@ -138,14 +138,13 @@ const SettingsPage = () => {
         '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
       }}
     >
-      <VStack spacing={6} align="stretch" maxW="600px" mx="auto">
+      <VStack spacing={4} align="stretch" maxW="500px" mx="auto" my="auto" p={4} w="full">
         {/* Header */}
         <Flex justify="space-between" align="center" wrap="wrap" gap={2}>
           <Heading color="var(--acid-yellow)" size="lg">
-            Settings & Profile
+            Settings
           </Heading>
           <Button
-            leftIcon={<ArrowBackIcon />}
             onClick={() => history.push("/chats")}
             bg="var(--surface-dark)"
             color="var(--text-primary)"
@@ -157,21 +156,22 @@ const SettingsPage = () => {
         </Flex>
 
         {/* Profile Section */}
-        <Box bg="var(--surface-dark)" p={5} borderRadius="lg" borderWidth="1px">
-          <VStack spacing={4} align="center">
+        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px">
+          <VStack spacing={3} align="center">
             <Avatar
-              size="xl"
+              size="lg"
               src={user?.pic}
               name={user?.name}
               border="3px solid var(--accent-cyan)"
             />
             <Box textAlign="center">
-              <Heading size="md">{user?.name}</Heading>
+              <Heading size="sm">{user?.name}</Heading>
               <Text color="var(--text-secondary)" fontSize="sm">{user?.email}</Text>
               <Badge
-                mt={2}
+                mt={1}
                 bg={user?.role === "admin" ? "var(--accent-pink)" : "var(--accent-cyan)"}
                 color="var(--dark-bg)"
+                size="sm"
               >
                 {user?.role === "admin" ? "Admin" : "User"}
               </Badge>
@@ -180,15 +180,15 @@ const SettingsPage = () => {
         </Box>
 
         {/* Change Password Section */}
-        <Box bg="var(--surface-dark)" p={5} borderRadius="lg" borderWidth="1px">
-          <Heading size="md" mb={4} color="var(--accent-cyan)">
+        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px">
+          <Heading size="sm" mb={3} color="var(--accent-cyan)">
             Change Password
           </Heading>
 
-          <Alert status="info" mb={4} bg="var(--surface-medium)" borderRadius="md" size="sm">
-            <AlertIcon />
+          <Alert status="info" mb={3} bg="var(--surface-medium)" borderRadius="md" size="sm">
+            <AlertIcon boxSize={4} />
             <Text fontSize="xs">
-              Min 8 chars with uppercase, lowercase, number, and special character.
+              8+ chars, uppercase, lowercase, number, special char.
             </Text>
           </Alert>
 
@@ -249,8 +249,8 @@ const SettingsPage = () => {
         </Box>
 
         {/* Session Management */}
-        <Box bg="var(--surface-dark)" p={5} borderRadius="lg" borderWidth="1px">
-          <Heading size="md" mb={3} color="var(--accent-pink)">
+        <Box bg="var(--surface-dark)" p={4} borderRadius="lg" borderWidth="1px">
+          <Heading size="sm" mb={2} color="var(--accent-pink)">
             Session
           </Heading>
           <Button
@@ -268,7 +268,7 @@ const SettingsPage = () => {
         {/* Data Storage Notice */}
         <Box bg="var(--surface-dark)" p={3} borderRadius="lg" borderWidth="1px" borderStyle="dashed">
           <Text fontSize="xs" color="var(--text-secondary)">
-            <strong>Data Storage:</strong> This app uses localStorage for prototyping. In production, data would be stored securely on servers.
+            <strong>Note:</strong> Uses localStorage for prototyping.
           </Text>
         </Box>
       </VStack>

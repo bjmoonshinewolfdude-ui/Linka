@@ -15,25 +15,22 @@ const AccessDenied = () => {
 
   return (
     <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      minH="100vh"
       bg="var(--dark-bg)"
-      color="var(--text-primary)"
-      p={4}
+      h="100vh"
+      display="flex"
+      flexDirection="column"
       overflowY="auto"
     >
-      <VStack spacing={6} textAlign="center" maxW="500px">
+      <VStack spacing={6} textAlign="center" maxW="400px" mx="auto" my="auto" p={4}>
         <Icon
           as={LockIcon}
-          boxSize={20}
+          boxSize={16}
           color="var(--accent-pink)"
         />
-        <Heading color="var(--accent-pink)" size="xl">
+        <Heading color="var(--accent-pink)" size="lg">
           Access Denied
         </Heading>
-        <Text fontSize="lg" color="var(--text-secondary)">
+        <Text fontSize="md" color="var(--text-secondary)">
           You do not have permission to access this page. 
           This area is restricted to administrators only.
         </Text>
@@ -41,7 +38,7 @@ const AccessDenied = () => {
           onClick={() => history.push("/chats")}
           bg="var(--accent-cyan)"
           color="var(--dark-bg)"
-          size="lg"
+          size="md"
           _hover={{ bg: "var(--acid-yellow)" }}
         >
           Return to Chats
