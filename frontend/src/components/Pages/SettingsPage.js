@@ -130,14 +130,20 @@ const SettingsPage = () => {
       minH="100vh"
       display="flex"
       justifyContent="center"
-      overflowY="auto"
-      css={{
-        '&::-webkit-scrollbar': { width: '8px' },
-        '&::-webkit-scrollbar-track': { background: 'var(--surface-dark)' },
-        '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
-      }}
+      p={4}
     >
-      <Box py={6} px={4} maxW="450px" mx="auto">
+      <Box 
+        py={6} 
+        px={4} 
+        maxW="450px" 
+        w="100%"
+        overflowY="auto"
+        css={{
+          '&::-webkit-scrollbar': { width: '8px' },
+          '&::-webkit-scrollbar-track': { background: 'var(--surface-dark)' },
+          '&::-webkit-scrollbar-thumb': { background: 'var(--surface-medium)', borderRadius: '4px' },
+        }}
+      >
         <VStack spacing={4} align="stretch" w="full">
         {/* Header */}
         <Flex justify="space-between" align="center" wrap="wrap" gap={2}>
