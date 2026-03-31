@@ -78,29 +78,35 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
     
     const handleMessageReceived = (newMessageRecieved) => {
+      console.log("Message received via socket:", newMessageRecieved);
+      console.log("Current selected chat:", selectedChatCompare.current?._id);
+      console.log("Message chat ID:", newMessageRecieved.chat?._id);
+      
       // Check if user is part of this chat
       const isUserInChat = newMessageRecieved.chat.users.some(
-        (u) => u._id === user._id
+        (u) => u._id === user._id || u._id.toString?.() === user._id
       );
+      
+      console.log("Is user in chat:", isUserInChat);
       
       if (!isUserInChat) return; // Don't process messages from chats user isn't in
 
-      if (
-        !selectedChatCompare.current || // if chat is not selected or doesn't match current chat
-        selectedChatCompare.current._id !== newMessageRecieved.chat._id
-      ) {
+      const currentChatId = selectedChatCompare.current?._id?.toString?.() || selectedChatCompare.current?._id;
+      const messageChatId = newMessageRecieved.chat?._id?.toString?.() || newMessageRecieved.chat?._id;
+      
+      console.log("Comparing chat IDs - current:", currentChatId, "message:", messageChatId);
+
+      if (!selectedChatCompare.current || currentChatId !== messageChatId) {
+        console.log("Adding notification for chat:", messageChatId);
         // Use functional update to avoid stale closure
         setNotification((prevNotifications) => {
-          // Check if we already have a notification for this chat
           const existingNotifIndex = prevNotifications.findIndex(
-            (n) => n.chat._id === newMessageRecieved.chat._id
+            (n) => n.chat._id === newMessageRecieved.chat._id || n.chat._id?.toString?.() === messageChatId
           );
           
           if (existingNotifIndex === -1) {
-            // New chat notification - add with count 1
             return [{ ...newMessageRecieved, count: 1 }, ...prevNotifications];
           } else {
-            // Existing chat - increment the count
             const updatedNotifications = [...prevNotifications];
             updatedNotifications[existingNotifIndex] = {
               ...updatedNotifications[existingNotifIndex],
@@ -111,6 +117,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         });
         setFetchAgain((prev) => !prev);
       } else {
+        console.log("Adding message to current chat");
         setMessages((prev) => [...prev, newMessageRecieved]);
       }
     };
