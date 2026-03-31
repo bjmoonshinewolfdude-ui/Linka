@@ -18,7 +18,6 @@ import io from "socket.io-client";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 
 const ENDPOINT = process.env.NODE_ENV === "production" ? window.location.origin : "http://localhost:5000";
-let socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -31,6 +30,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
+  
+  // Use ref for socket and selectedChatCompare to persist across renders
+  const socketRef = React.useRef(null);
+  const selectedChatCompare = React.useRef(null);
 
   // Fetch messages
   const fetchMessages = async () => {
@@ -44,7 +47,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       );
       setMessages(data);
       setLoading(false);
-      socket.emit("join chat", selectedChat._id);
+      socketRef.current.emit("join chat", selectedChat._id);
     } catch (error) {
       toast({
         title: "Error Occurred!",
@@ -58,24 +61,34 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", user);
-    socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", (room) => {
-      // Convert both to strings for comparison
-      if (room && selectedChat?._id && room.toString() === selectedChat._id.toString()) {
+    socketRef.current = io(ENDPOINT);
+    socketRef.current.emit("setup", user);
+    
+    const handleConnected = () => setSocketConnected(true);
+    const handleTyping = (room) => {
+      if (room && selectedChatCompare.current?._id && 
+          room.toString() === selectedChatCompare.current._id.toString()) {
         setIsTyping(true);
       }
-    });
-    socket.on("stop typing", (room) => {
-      // Convert both to strings for comparison
-      if (room && selectedChat?._id && room.toString() === selectedChat._id.toString()) {
+    };
+    const handleStopTyping = (room) => {
+      if (room && selectedChatCompare.current?._id && 
+          room.toString() === selectedChatCompare.current._id.toString()) {
         setIsTyping(false);
       }
-    });
+    };
+    
+    socketRef.current.on("connected", handleConnected);
+    socketRef.current.on("typing", handleTyping);
+    socketRef.current.on("stop typing", handleStopTyping);
 
+    return () => {
+      socketRef.current.off("connected", handleConnected);
+      socketRef.current.off("typing", handleTyping);
+      socketRef.current.off("stop typing", handleStopTyping);
+    };
     // eslint-disable-next-line
-  }, [selectedChat]);
+  }, []);
 
   // Track previous chat to leave room when switching
   const prevChatRef = React.useRef(null);
@@ -83,11 +96,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   useEffect(() => {
     // Leave previous chat room if exists
     if (prevChatRef.current && prevChatRef.current._id !== selectedChat?._id) {
-      socket.emit("leave chat", prevChatRef.current._id);
+      socketRef.current.emit("leave chat", prevChatRef.current._id);
     }
     
     fetchMessages();
-    selectedChatCompare = selectedChat;
+    selectedChatCompare.current = selectedChat;
     // Clear typing indicator when switching chats
     setIsTyping(false);
     
@@ -98,7 +111,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
+    socketRef.current.on("message recieved", (newMessageRecieved) => {
       // Check if user is part of this chat
       const isUserInChat = newMessageRecieved.chat.users.some(
         (u) => u._id === user._id
@@ -107,8 +120,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       if (!isUserInChat) return; // Don't process messages from chats user isn't in
 
       if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
-        selectedChatCompare._id !== newMessageRecieved.chat._id
+        !selectedChatCompare.current || // if chat is not selected or doesn't match current chat
+        selectedChatCompare.current._id !== newMessageRecieved.chat._id
       ) {
         // Check if we already have a notification for this chat
         const existingNotifIndex = notification.findIndex(
@@ -143,7 +156,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage && !isSending) {
       setIsSending(true);
-      socket.emit("stop typing", selectedChat._id);
+      socketRef.current.emit("stop typing", selectedChat._id);
       try {
         const config = {
           headers: {
@@ -157,7 +170,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           config,
         );
         setMessages((prev) => [...prev, data]);
-        socket.emit("new message", data);
+        socketRef.current.emit("new message", data);
         setNewMessage("");
       } catch (error) {
         toast({
@@ -182,7 +195,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     if (!typing) {
       setTyping(true);
-      socket.emit("typing", selectedChat._id);
+      socketRef.current.emit("typing", selectedChat._id);
     }
 
     // Clear existing timeout
@@ -192,7 +205,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     // Set new timeout to stop typing
     typingTimeoutRef.current = setTimeout(() => {
-      socket.emit("stop typing", selectedChat._id);
+      socketRef.current.emit("stop typing", selectedChat._id);
       setTyping(false);
     }, 3000);
   };
