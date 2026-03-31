@@ -20,7 +20,6 @@ import {
   Icon,
   Flex,
   Avatar,
-  useToast,
 } from "@chakra-ui/react";
 import { ArrowBackIcon, LockIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
@@ -32,7 +31,6 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [auditLog, setAuditLog] = useState([]);
   const { user } = ChatState();
-  const toast = useToast();
   const history = useHistory();
 
   // Check if user is admin
