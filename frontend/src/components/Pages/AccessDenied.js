@@ -6,7 +6,7 @@ import {
   Button,
   VStack,
   Icon,
-} from "chakra-ui/react";
+} from "@chakra-ui/react";
 import { LockIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 
