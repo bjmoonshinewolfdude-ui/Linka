@@ -1,10 +1,3 @@
-/**
- * Server Entry Point
- * Main application server with Express and Socket.io
- * Handles: API routes, static file serving, real-time chat
- */
-
-// Import required dependencies
 const express = require("express");
 const dotenv = require("dotenv");
 const { chats } = require("./backend/data/data");
