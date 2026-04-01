@@ -1,3 +1,9 @@
+/**
+ * MyChats Component
+ * Displays user's chat list with real-time updates via Socket.io
+ * Includes: Chat list, group chat creation modal, empty state for new users
+ */
+
 import React from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import { useToast } from "@chakra-ui/react";
