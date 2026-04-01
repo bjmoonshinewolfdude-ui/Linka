@@ -1,3 +1,9 @@
+/**
+ * Message Controller
+ * Handles sending and fetching messages
+ * Includes: Message creation, chat message retrieval, membership validation
+ */
+
 const asyncHandler = require("express-async-handler");
 const Message = require("../models/MessageModel");
 const User = require("../models/UserModel");

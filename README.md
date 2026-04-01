@@ -30,7 +30,7 @@ A full-stack MERN chat application with real-time messaging, user authentication
 - bcryptjs
 
 ## Deployment
-This application is deployed on Vercel with serverless backend functions.
+This application is deployed on Railway with serverless backend functions.
 
 ## Quick Start
 

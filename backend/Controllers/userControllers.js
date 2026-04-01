@@ -22,6 +22,18 @@ const allUsers = expressAsyncHandler(async (req, res) => {
 const registerUser = expressAsyncHandler(async (req, res) => {
   console.log("REQ BODY:", req.body);
   const { name, email, password, pic } = req.body;
+});
+
+/**
+ * Register a new user
+ * POST /api/user
+ * Creates new user account with hashed password
+ */
+const registerUser = expressAsyncHandler(async (req, res) => {
+  // Extract user data from request body
+  const { name, email, password, pic } = req.body;
+
+  // Validation: Check if all required fields are provided
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Please Enter all the Fields");
@@ -42,13 +54,14 @@ const registerUser = expressAsyncHandler(async (req, res) => {
     throw new Error("Name cannot exceed 25 characters");
   }
 
+  // Check if user with this email already exists
   const userExists = await User.findOne({ email });
-
   if (userExists) {
     res.status(400);
     throw new Error("User already exists");
   }
 
+  // Create new user in database
   const user = await User.create({
     name: trimmedName,
     email,
@@ -56,6 +69,7 @@ const registerUser = expressAsyncHandler(async (req, res) => {
     pic,
   });
 
+  // Return success response with user data and JWT token
   if (user) {
     res.status(201).json({
       _id: user._id,
@@ -63,19 +77,26 @@ const registerUser = expressAsyncHandler(async (req, res) => {
       email: user.email,
       pic: user.pic,
       role: user.role,
-      token: generateToken(user._id),
+      token: generateToken(user._id), // Generate auth token
     });
   } else {
     res.status(400);
-    throw new Error("Failed to Create the User");
+    throw new Error("Failed to create the User");
   }
 });
 
+/**
+ * Authenticate existing user
+ * POST /api/user/login
+ * Validates credentials and returns user data with token
+ */
 const authUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
+  // Find user by email in database
   const user = await User.findOne({ email });
 
+  // Validate password using bcrypt comparison
   if (user && (await user.matchPassword(password))) {
     res.json({
       _id: user._id,
@@ -90,4 +111,6 @@ const authUser = expressAsyncHandler(async (req, res) => {
     throw new Error("Invalid Email or Password");
   }
 });
+
+// Export all controller functions for use in routes
 module.exports = { registerUser, authUser, allUsers };

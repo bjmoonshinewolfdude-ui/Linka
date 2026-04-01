@@ -1,3 +1,9 @@
+/**
+ * SideDrawer Component
+ * Main navigation header with search, notifications, and user menu
+ * Includes: User search drawer, notification bell, profile dropdown
+ */
+
 import {
   Box,
   Button,
